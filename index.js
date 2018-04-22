@@ -1,5 +1,7 @@
 import {Board} from './Arduino.js';
 import {Keybaord} from './Keyboard.js';
+import IBMCredentials from './credentials.js'
+
 
 // uncomment  and changge to import devices
 // import {Button} from './Devices.js';
