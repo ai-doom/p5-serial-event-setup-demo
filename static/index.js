@@ -51,14 +51,14 @@ async function record_end(){
     let mp3 = await microm.getMp3();
     
     swal('Transtexting...','', 'info');
-    let text
+    let text = null;
     try{
         text = await speech_to_text(mp3.blob);
     }catch(e){
         console.warn(e);
         await swal("Error", "Cannot transcode.", "Error");
     }
-    if(text){
+    if(text !== null){
         console.log(text)
         await swal('You said:', text, 'success');
     }
