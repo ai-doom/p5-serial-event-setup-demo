@@ -12,7 +12,7 @@ run: https://github.com/vanevery/p5.serialcontrol/releases
 see https://github.com/vanevery/p5.serialport#p5serial-nodejs 
 
 ### run web server
-either via serve.js or Python
+
 #### serve.js way (Prefered)
 Make sure you have node.js installed to have it run, if you don't have it:
 
@@ -22,17 +22,12 @@ $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/inst
 $ brew install node
 ```
 
-##### install `serve.js`
+##### install dependencyies
 ```bash
-$ npm install -g serve
+$ npm install
 ```
 
 ##### run
 ``` bash
-$ serve .
-```
-
-#### Python way
-``` bash
-$ python -m SimpleHTTPServer
+$ serve -C
 ```
