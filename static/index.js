@@ -48,7 +48,7 @@ async function record_end(){
     await mic.stop();
     let bolb = await mic.getBlob();
     let text = await speech_to_text(bolb);
-    
+    await swal(text);
 }
 
 
@@ -60,5 +60,5 @@ async function speech_to_text(soundBlob){
         processData: false,
         contentType: "multipart/form-data",
     });
-    console.log(results);
+    return results.map(r=> r.alternatives[0].transcript).join(' ');
 }
