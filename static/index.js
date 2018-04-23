@@ -1,7 +1,6 @@
 import  './libraries/jquery.min.js';
 import {Board} from './Arduino.js';
 import {Keybaord} from './Keyboard.js';
-import Mic from './Mic.js';
 import {SpeechToText} from './IBM.js'
 
 // uncomment  and changge to import devices
@@ -25,40 +24,44 @@ board.on('point', point => {
 let keyboard = new Keybaord();
 // uncomment if keyboard wanted
 keyboard.on('press', (e) =>{
-    if(e.key == 'm'){
+    if(e.key == ' '){
         record_begin();
     }
 });
 keyboard.on('release', (e) =>{
-    if(e.key == 'm'){
+    if(e.key == ' '){
         record_end();
     }
 });
 
-let mic = new Mic();
-mic.access();
+const microm = new Microm();
 
 async function record_begin(){
+    await microm.record();
     console.log('record_begin...');
-    swal('recording...');
-    mic.record();
+    setTimeout(()=>{
+        swal('Recorder', 'recording...', 'info');
+    }, 500)
 }
 
 async function record_end(){
-    swal.close();
-    swal('recorded.');
+    swal('Recorder', 'recorded.', 'success');
     console.log('record_end.');
-
-    await mic.stop();
-    let bolb = await mic.getBlob();
+    await microm.stop();
+    let mp3 = await microm.getMp3();
     
-    swal.close();
-    swal('Transtexting....');
-    let text = await speech_to_text(bolb);
-
-    console.log(text)
-    swal.close();
-    await swal(text);
+    swal('Transtexting...','', 'info');
+    let text
+    try{
+        text = await speech_to_text(mp3.blob);
+    }catch(e){
+        console.warn(e);
+        await swal("Error", "Cannot transcode.", "Error");
+    }
+    if(text){
+        console.log(text)
+        await swal('You said:', text, 'success');
+    }
 }
 
 

@@ -46,7 +46,7 @@ class Mic{
     }
     async __exportWAV(){
         return new Promise ((resolve, _) => {
-            this.audioRecorder.exportWAV(resolve, 'audio/wav');
+            this.audioRecorder.exportWAV(resolve, 'audio/mp3');
         });
     }
 }
