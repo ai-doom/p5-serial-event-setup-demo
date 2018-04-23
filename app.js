@@ -18,9 +18,10 @@ app.post('/speech-to-text', function(req, res, next) {
       };
     
     speech_to_text.recognize(params, function(error, transcript) {
-        if (error)
+        if (error){
+            res.send({'error': error});
             console.warn('Error:', error);
-        else{
+        }else{
             res.send(transcript.results);
         }
     });

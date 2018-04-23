@@ -40,14 +40,24 @@ mic.access();
 
 async function record_begin(){
     console.log('record_begin...');
+    swal('recording...');
     mic.record();
 }
 
 async function record_end(){
+    swal.close();
+    swal('recorded.');
     console.log('record_end.');
+
     await mic.stop();
     let bolb = await mic.getBlob();
+    
+    swal.close();
+    swal('Transtexting....');
     let text = await speech_to_text(bolb);
+
+    console.log(text)
+    swal.close();
     await swal(text);
 }
 
@@ -60,5 +70,8 @@ async function speech_to_text(soundBlob){
         processData: false,
         contentType: "multipart/form-data",
     });
+    if(results.error){
+        throw results.error;
+    }
     return results.map(r=> r.alternatives[0].transcript).join(' ');
 }
