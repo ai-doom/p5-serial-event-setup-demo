@@ -37,6 +37,9 @@ $ npm install
 ``` bash
 $ node app
 ```
+## Test
+### Use keyboard to convert speech
+Keep pressing `space` while talking.
 
 ## Development
 
