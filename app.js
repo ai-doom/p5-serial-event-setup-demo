@@ -12,9 +12,10 @@ const speech_to_text = new SpeechToTextV1 ({
 
 // const fs = require('fs');
 app.post('/speech-to-text', function(req, res, next) {
+    // req.pipe(fs.createWriteStream('./logs/test.mp3'))
     let params = {
         audio: req,
-        content_type: 'audio/wav'
+        content_type: 'audio/mp3'
       };
     
     speech_to_text.recognize(params, function(error, transcript) {
