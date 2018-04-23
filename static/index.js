@@ -35,13 +35,6 @@ keyboard.on('release', (e) =>{
     }
 });
 
-
-
-// let speech_to_text_service = new SpeechToText(IBMCredentials);
-// speech_to_text_service.connect();
-// speech_to_text_service.on('error', console.warn);
-
-
 let mic = new Mic();
 mic.access();
 
@@ -55,20 +48,17 @@ async function record_end(){
     await mic.stop();
     let bolb = await mic.getBlob();
     let text = await speech_to_text(bolb);
-    console.log(text);
+    
 }
 
 
 async function speech_to_text(soundBlob){
-    
-    // speech_to_text_service.send(soundBlob);
-    await $.ajax({
+    let results = await $.ajax({
         type: 'POST',
         url: '/speech-to-text',
         data: soundBlob,
         processData: false,
         contentType: "multipart/form-data",
-    })
+    });
+    console.log(results);
 }
-// speech_to_text_service.on('message', console.log);
-// speech_to_text_service.on('close', console.warn);

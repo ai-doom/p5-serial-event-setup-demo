@@ -21,7 +21,7 @@ app.post('/speech-to-text', function(req, res, next) {
         if (error)
             console.warn('Error:', error);
         else{
-            
+            res.send(transcript.results);
         }
     });
 
