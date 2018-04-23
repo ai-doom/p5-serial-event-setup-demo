@@ -10,7 +10,7 @@ const speech_to_text = new SpeechToTextV1 ({
     password: IBMCredentials.speech_to_text[0].credentials.password
   });
 
-  const fs = require('fs');
+// const fs = require('fs');
 app.post('/speech-to-text', function(req, res, next) {
     let params = {
         audio: req,
