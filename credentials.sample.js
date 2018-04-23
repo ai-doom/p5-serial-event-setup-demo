@@ -1,4 +1,3 @@
-export default
 {
   "speech_to_text": [
     {
@@ -8,7 +7,7 @@ export default
         "url": "https://stream.watsonplatform.net/speech-to-text/api",
         "username": "••••••••••••••••••••••••••••••••••••",
         "password": "••••••••••••"
-      }
+      },
     }
   ]
 }
