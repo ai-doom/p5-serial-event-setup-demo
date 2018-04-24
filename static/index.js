@@ -21,54 +21,96 @@ board.on('point', point => {
     console.log(`point`, point)
 });
 
-const siri = new Howl({
-    src: ['Siri.aac'],
-    sprite: {
-      on: [0, 1000],
-      done: [1000, 1000],
-      cancel: [2000, 1000]
+class Siri {
+    constructor(filepath = 'Siri.aac'){
+        this.siri = new Howl({
+            src: [filepath],
+            sprite: {
+              start: [0, 1000],
+              done: [1000, 1000],
+              cancel: [2000, 1000]
+            }
+          });
     }
-  });
+    play(spriteName){
+        if(this.siri.playing()){
+            this.siri.stop();
+        }
+        this.siri.play(spriteName);
+    }
+    start(){
+        this.play('start');
+    }
+    done(){
+        this.play('done')
+    }
+    cancel(){
+        this.play('cancel')
+    }
+}
+const siri = new Siri();
 
 const siriKey = ' ';
 const keyboard = new Keybaord();
-keyboard.on('press', (e) =>{
+keyboard.on('press', async (e) =>{
     if(e.key == siriKey && !isBusy()){
         record_begin();
 
         keyboard.once('release', (e) =>{
             if(e.key == siriKey){
-                record_end();
+                record_might_end();
             }
         });
     }
 });
 
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const microm = new Microm();
+var recordSometime = false;
+var aborted = false;
 
 async function record_begin(){
     await microm.record();
     console.log('record_begin...');
     
     setTimeout(()=>{
-        siri.play('on');
+        siri.start();
     }, 500);
-    setTimeout(()=>{
-        swal({
-            title: `Recorder`, 
-            text: "recording...", 
-            icon: 'info',
-            buttons: {
-                cancel: {value:false, visible: true},
-                confirm: false,
-            },
-        });
-    }, 700);
+
+    await wait(700);
+    if(aborted){
+        aborted = false;
+        return false;
+    }
+    recordSometime = true;
+    swal({
+        title: `Recorder`, 
+        text: "recording...", 
+        icon: 'info',
+        buttons: {
+            cancel: {value:false, visible: true},
+            confirm: false,
+        },
+    });
+    return true;
 }
 
+async function record_might_end(){
+    if(recordSometime){
+        recordSometime = false;
+        return await record_end();
+    }else{
+        aborted = true;
+        return await record_abort();
+    }
+}
+async function record_abort(){
+    siri.cancel();
+} 
 async function record_end(){
-    siri.play('done');
+    recordSometime = false;
+    siri.done();
     swal({
         title: `Recorder`, 
         text: "transcoding...", 
