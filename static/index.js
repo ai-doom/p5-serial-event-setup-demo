@@ -2,6 +2,7 @@ import  './libraries/jquery.min.js';
 import {Board} from './Arduino.js';
 import {Keybaord} from './Keyboard.js';
 import {SpeechToText} from './IBM.js'
+import './libraries/howler.js';
 
 // uncomment  and changge to import devices
 // import {Button} from './Devices.js';
@@ -19,6 +20,15 @@ board.connect({baudrate: 9600});
 board.on('point', point => {
     console.log(`point`, point)
 });
+
+const siri = new Howl({
+    src: ['Siri.aac'],
+    sprite: {
+      on: [0, 1000],
+      done: [1000, 1000],
+      cancel: [2000, 1000]
+    }
+  });
 
 const siriKey = ' ';
 const keyboard = new Keybaord();
@@ -40,6 +50,10 @@ const microm = new Microm();
 async function record_begin(){
     await microm.record();
     console.log('record_begin...');
+    
+    setTimeout(()=>{
+        siri.play('on');
+    }, 500);
     setTimeout(()=>{
         swal({
             title: `Recorder`, 
@@ -50,10 +64,11 @@ async function record_begin(){
                 confirm: false,
             },
         });
-    }, 700)
+    }, 700);
 }
 
 async function record_end(){
+    siri.play('done');
     swal({
         title: `Recorder`, 
         text: "transcoding...", 
@@ -116,7 +131,14 @@ function isBusy(){
     let state = swal.getState();
     return state.isOpen && state.actions.cancel.value === false;
 }
-
+function playTextToAudioBlob(blob){
+    let url = URL.createObjectURL( blob );
+    let sound = new Howl({
+        src: [url],
+        format: ['webm']
+      }).play();
+    return sound;
+}
 keyboard.on('press', async (e) =>{
     if(e.key == 't' && !isBusy()){
         let input = await swal({
@@ -127,9 +149,10 @@ keyboard.on('press', async (e) =>{
                 confirm: true,
             },
         });
-        
-        let result = await text_to_speech(input);
-        console.log(result)
+        if(input){
+            let blob = await text_to_speech(input);
+            playTextToAudioBlob(blob);
+        }
     }
 });
 
