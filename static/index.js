@@ -1,8 +1,10 @@
 import  './libraries/jquery.min.js';
 import {Board} from './Arduino.js';
 import {Keybaord} from './Keyboard.js';
-import {SpeechToText} from './IBM.js'
 import './libraries/howler.js';
+import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js';
+import Siri from './Siri.js'
+import Sayer from './Sayer.js';
 
 // uncomment  and changge to import devices
 // import {Button} from './Devices.js';
@@ -21,33 +23,6 @@ board.on('point', point => {
     console.log(`point`, point)
 });
 
-class Siri {
-    constructor(filepath = 'Siri.aac'){
-        this.siri = new Howl({
-            src: [filepath],
-            sprite: {
-              start: [0, 1000],
-              done: [1000, 1000],
-              cancel: [2000, 1000]
-            }
-          });
-    }
-    play(spriteName){
-        if(this.siri.playing()){
-            this.siri.stop();
-        }
-        this.siri.play(spriteName);
-    }
-    start(){
-        this.play('start');
-    }
-    done(){
-        this.play('done')
-    }
-    cancel(){
-        this.play('cancel')
-    }
-}
 const siri = new Siri();
 
 const siriKey = ' ';
@@ -58,7 +33,7 @@ keyboard.on('press', async (e) =>{
 
         keyboard.once('release', (e) =>{
             if(e.key == siriKey){
-                record_might_end();
+                end_record_and_response();
             }
         });
     }
@@ -107,6 +82,7 @@ async function record_might_end(){
 }
 async function record_abort(){
     siri.cancel();
+    return false;
 } 
 async function record_end(){
     recordSometime = false;
@@ -124,63 +100,29 @@ async function record_end(){
     await microm.stop();
     let mp3 = await microm.getMp3();
     
-    swal('Transtexting...','', 'info');
+    // swal('Transtexting...','', 'info');
+    swal('Thinking...','', 'info');
     let text = null;
     try{
-        text = await speech_to_text(mp3.blob);
+        text = await speech_to_text(mp3.blob, language);
     }catch(e){
         console.warn(e);
-        await swal("Error", "Cannot transcode.", "error");
+        swal("Error", "Cannot transcode.", "error");
+        return false
     }
     if(text !== null){
-        console.log(text)
-        await swal('You said:', text, 'success');
+        // console.log(text)
+        // swal('You said:', text, 'success');
+        return text;
     }
-}
-
-var language = 'en-us';
-
-async function speech_to_text(soundBlob){
-    let results = await $.ajax({
-        type: 'POST',
-        url: `speech-to-text/${language}`,
-        data: soundBlob,
-        processData: false,
-        contentType: "multipart/form-data",
-    });
-    if(results.error){
-        throw results.error;
-    }
-    results.map(r=> console.log(r.alternatives[0]));
-    return results.map(r=> r.alternatives[0].transcript).join(' ');
-}
-
-async function text_to_speech(text, lang = language){
-    let results = await $.ajax({
-        type: 'POST',
-        url: `text-to-speech/${language}`,
-        data: JSON.stringify({text: text}),
-        contentType: "application/json; charset=utf-8",
-        cache: false,
-        xhrFields:{
-            responseType: 'blob'
-        },
-    });
-    return results;
 }
 
 function isBusy(){
     let state = swal.getState();
     return state.isOpen && state.actions.cancel.value === false;
 }
-function playTextToAudioBlob(blob){
-    let url = URL.createObjectURL( blob );
-    let sound = new Howl({
-        src: [url],
-        format: ['webm']
-      }).play();
-    return sound;
-}
+
+
 keyboard.on('press', async (e) =>{
     if(e.key == 't' && !isBusy()){
         let input = await swal({
@@ -192,10 +134,84 @@ keyboard.on('press', async (e) =>{
             },
         });
         if(input){
-            let blob = await text_to_speech(input);
-            playTextToAudioBlob(blob);
+            await text_to_speech_and_play();
+        }
+    }
+});
+keyboard.on('press', async (e) =>{
+    if(e.key == 'q' && !isBusy()){
+        let input = await swal({
+            title: `Question:`, 
+            content: "input", 
+            buttons: {
+                cancel: {value:false, visible: true},
+                confirm: true,
+            },
+        });
+        if(input){
+            let question = input;
+            console.log('question', question);
+            let answer = await reason_question(question);
+            console.log('answer', answer);
+            swal({
+                title: answer,
+                text : question,
+                button: false,
+            })
         }
     }
 });
 
 window.isBusy = isBusy;
+
+var language = 'en-us';
+
+
+async function end_record_and_response(){
+    let question = await record_might_end();
+    console.log('question', question);
+    if(question){
+        let answer = await reason_question(question);
+        console.log('answer', answer);
+        swal({
+            title: answer,
+            text : question,
+            button: false,
+        })
+    }
+}
+
+async function reason_question(question){
+    let sayer = new Sayer(language);
+    switch (language) {
+        case 'ja-jp':
+            return await sayer.unsure()
+
+        case 'en-us':
+        case 'en-gb':
+        default:
+            // TODO: main logic part
+            if(question.match(/language/i)){
+                let new_langauge_literal = '';
+                if(question.match(/british|uk/i)){
+                    language = 'en-gb';
+                    new_langauge_literal = 'British English'
+                }else if(question.match(/american|us/i)){
+                    language = 'en-us';
+                    new_langauge_literal = 'American English'
+                }else if(question.match(/spanish|spain/i)){
+                    language = 'es-es';
+                    new_langauge_literal = 'Spanish'
+                }else if(question.match(/japanese|japan/i)){
+                    language = 'ja-jp';
+                    new_langauge_literal = 'Japanese'
+                }else{
+                    return await sayer.unsure();
+                }
+                return await sayer.okey(`Language switched to ${new_langauge_literal}.`);
+            }else{
+                return await sayer.unsure();
+            }
+    }
+    return await sayer.unsure()
+}
