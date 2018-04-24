@@ -35,7 +35,7 @@ class Sayer{
             case 'ja-jp':
                 let candidates = ['了解', '承知しました']
                 if(what_s_done){
-                    candidates.append(what_s_done)
+                    candidates.push(what_s_done)
                 }
                 return await this.say(candidates);
         
