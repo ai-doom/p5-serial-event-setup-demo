@@ -5,13 +5,13 @@ class Sayer{
     constructor(language){
         this.lang = language
     }
-    async say(content){
+    async say(content, instant_return = true){
         if(typeof content == 'string'){
-            return await text_to_speech_and_play(content, this.lang);
+            return await text_to_speech_and_play(content, this.lang, instant_return);
         }else if(content instanceof Array){
             let text = content.randomElement();
             if(typeof text == 'string'){
-                return await text_to_speech_and_play(content.randomElement(), this.lang);
+                return await text_to_speech_and_play(content.randomElement(), this.lang, instant_return);
             }else{
                 throw TypeError("Must say Array of String!");
             }
@@ -43,6 +43,34 @@ class Sayer{
             case 'en-gb':
             default:
                 return await this.say([`Okey. `+what_s_done , 'Sure!']);
+        }
+    }
+    async askForName(){
+        switch (this.lang) {
+            case 'ja-jp':
+                
+    
+            case 'es-es':
+                
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return await this.say(`What's your name?`);
+        }
+    }
+    async hi(name){
+        switch (this.lang) {
+            case 'ja-jp':
+                
+    
+            case 'es-es':
+                
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return await this.say(`Hi, ${name}, What can I do for you?`);
         }
     }
 }

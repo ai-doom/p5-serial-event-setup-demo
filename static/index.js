@@ -26,18 +26,44 @@ board.on('point', point => {
 const siri = new Siri();
 
 const siriKey = ' ';
-const keyboard = new Keybaord();
-keyboard.on('press', async (e) =>{
-    if(e.key == siriKey && !isBusy()){
-        record_begin();
+const if_siri_key_not_busy_do =  (async_callable) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
+const if_siri_key_do =  (async_callable) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
 
-        keyboard.once('release', (e) =>{
-            if(e.key == siriKey){
-                end_record_and_response();
-            }
-        });
+const keyboard = new Keybaord();
+keyboard.on('press', if_siri_key_not_busy_do(  () =>{
+    record_begin(true);
+    keyboard.once('release', if_siri_key_do(end_record_and_response));
+}));
+
+async function pop_busy_dialog(title, cancelable = true, text = ''){
+    return await swal({
+        title: title,
+        text: text,
+        buttons: {
+            cancel: {value:false, visible: cancelable},
+            confirm: false,
+        },
+    })
+}
+keyboard.on('press', async (e) =>{
+    if(e.key == 'n' && !isBusy()){
+        let sayer = new Sayer(language);
+        let questionText = await sayer.askForName();
+        pop_busy_dialog(questionText, false);
+        
+        record_begin();
+        keyboard.once('press', if_siri_key_do(afterAskName));
     }
 });
+async function afterAskName(e){
+    let sayer = new Sayer(language);
+    let name = await record_might_end();
+    let questionText = await sayer.hi(name);
+    pop_busy_dialog(questionText, false);
+
+    record_begin();
+    keyboard.once('press', if_siri_key_do(end_record_and_response));
+}
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -45,7 +71,7 @@ const microm = new Microm();
 var recordSometime = false;
 var aborted = false;
 
-async function record_begin(){
+async function record_begin(pop_up_dialog = false){
     await microm.record();
     console.log('record_begin...');
     
@@ -59,15 +85,9 @@ async function record_begin(){
         return false;
     }
     recordSometime = true;
-    swal({
-        title: `Recorder`, 
-        text: "recording...", 
-        icon: 'info',
-        buttons: {
-            cancel: {value:false, visible: true},
-            confirm: false,
-        },
-    });
+    if(pop_up_dialog){
+        pop_busy_dialog('Listening...', ture);
+    }
     return true;
 }
 
@@ -87,21 +107,13 @@ async function record_abort(){
 async function record_end(){
     recordSometime = false;
     siri.done();
-    swal({
-        title: `Recorder`, 
-        text: "transcoding...", 
-        icon: 'info',
-        buttons: {
-            cancel: {value:false, visible: false},
-            confirm: false,
-        },
-    });
+    pop_busy_dialog('Transcoding...', false);
     console.log('record_end.');
     await microm.stop();
     let mp3 = await microm.getMp3();
     
     // swal('Transtexting...','', 'info');
-    swal('Thinking...','', 'info');
+    pop_busy_dialog('Thinking...', false);
     let text = null;
     try{
         text = await speech_to_text(mp3.blob, language);

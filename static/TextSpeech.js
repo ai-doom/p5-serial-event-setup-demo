@@ -33,19 +33,27 @@ async function text_to_speech(text, lang = default_language){
     return results;
 }
 
+const await_on = (obj, event) => new Promise(resolve => obj.once(event, resolve));
+
 export
-function playTextToAudioBlob(blob){
+async function playTextToAudioBlob(blob){
     let url = URL.createObjectURL( blob );
     let sound = new Howl({
         src: [url],
         format: ['webm']
-      }).play();
+      });
+    sound.play();
+    await await_on(sound, 'end');
     return sound;
 }
 
 export
-async function text_to_speech_and_play(text, lang){
+async function text_to_speech_and_play(text, lang, instant_return = false){
     let blob = await text_to_speech(text, lang);
-    playTextToAudioBlob(blob);
+    if(instant_return){
+        playTextToAudioBlob(blob);
+    }else{
+        await playTextToAudioBlob(blob);
+    }
     return text
 }
