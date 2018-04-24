@@ -19,7 +19,6 @@
   "dependencies": {
     "eventemitter2": "^5.0.1",
     "express": "^4.16.3",
-    "express-stream": "^0.8.0",
     "watson-developer-cloud": "^3.3.0"
   }
 }
