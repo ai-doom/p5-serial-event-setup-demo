@@ -2,6 +2,7 @@ const IBMCredentials = require('./credentials.json')
 
 const SpeechToTextV1 = require('watson-developer-cloud/speech-to-text/v1');
 const express = require('express')
+const fs = require('fs');
 
 const app = express()
 
@@ -10,10 +11,36 @@ const speech_to_text = new SpeechToTextV1 ({
     password: IBMCredentials.speech_to_text[0].credentials.password
   });
 
-// const fs = require('fs');
-app.post('/speech-to-text', function(req, res, next) {
+
+app.post('/speech-to-text/:lang', function(req, res, next) {
+
+    let language_model = 'en-US_BroadbandModel';
+
+    if(req.params.lang){
+        switch (req.params.lang) {
+            case 'ja-jp':
+                language_model  = 'ja-JP_BroadbandModel';
+                break;
+
+            case 'en-gb':
+                language_model  = 'en-GB_BroadbandModel';
+                break;
+
+            case 'es-es':
+                language_model  = 'es-ES_BroadbandModel';
+                break;
+
+            case 'en-us':
+            default:
+                language_model = 'en-US_BroadbandModel';
+                break;
+        }
+    }
+
     // req.pipe(fs.createWriteStream('./logs/test.mp3'))
+
     let params = {
+        model: language_model,
         audio: req,
         content_type: 'audio/mp3'
       };

@@ -40,7 +40,7 @@ async function record_begin(){
     console.log('record_begin...');
     setTimeout(()=>{
         swal('Recorder', 'recording...', 'info');
-    }, 500)
+    }, 700)
 }
 
 async function record_end(){
@@ -55,7 +55,7 @@ async function record_end(){
         text = await speech_to_text(mp3.blob);
     }catch(e){
         console.warn(e);
-        await swal("Error", "Cannot transcode.", "Error");
+        await swal("Error", "Cannot transcode.", "error");
     }
     if(text !== null){
         console.log(text)
@@ -63,11 +63,12 @@ async function record_end(){
     }
 }
 
+var language = 'en-us';
 
 async function speech_to_text(soundBlob){
     let results = await $.ajax({
         type: 'POST',
-        url: '/speech-to-text',
+        url: `speech-to-text/${language}`,
         data: soundBlob,
         processData: false,
         contentType: "multipart/form-data",
@@ -75,5 +76,6 @@ async function speech_to_text(soundBlob){
     if(results.error){
         throw results.error;
     }
+    results.map(r=> console.log(r.alternatives[0]));
     return results.map(r=> r.alternatives[0].transcript).join(' ');
 }
