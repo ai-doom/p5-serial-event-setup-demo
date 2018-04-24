@@ -7,7 +7,7 @@ import {SpeechToText} from './IBM.js'
 // import {Button} from './Devices.js';
 // let button1 = Button();
 
-let board = new Board();
+const board = new Board();
 board.connect({baudrate: 9600});
 
 // 
@@ -20,16 +20,15 @@ board.on('point', point => {
     console.log(`point`, point)
 });
 
-
-let keyboard = new Keybaord();
-// uncomment if keyboard wanted
+const siriKey = ' ';
+const keyboard = new Keybaord();
 keyboard.on('press', (e) =>{
-    if(e.key == ' '){
+    if(e.key == siriKey){
         record_begin();
     }
 });
 keyboard.on('release', (e) =>{
-    if(e.key == ' '){
+    if(e.key == siriKey){
         record_end();
     }
 });
