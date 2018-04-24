@@ -185,7 +185,27 @@ async function reason_question(question){
     let sayer = new Sayer(language);
     switch (language) {
         case 'ja-jp':
-            return await sayer.unsure()
+            if(question.match(/言語/i)){
+                let new_langauge_literal = '';
+                if(question.match(/イギリス/i)){
+                    language = 'en-gb';
+                    new_langauge_literal = 'イギリス語'
+                }else if(question.match(/英語|アメリカ|米/i)){
+                    language = 'en-us';
+                    new_langauge_literal = '英語'
+                }else if(question.match(/スペイン/i)){
+                    language = 'es-es';
+                    new_langauge_literal = 'スペイン語'
+                }else{
+                    return await sayer.unsure();
+                }
+                return await sayer.okey(`${new_langauge_literal} に換えました。`);
+            }else{
+                return await sayer.unsure();
+            }
+
+        case 'es-es':
+            return await sayer.unsure();
 
         case 'en-us':
         case 'en-gb':
