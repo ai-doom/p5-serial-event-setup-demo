@@ -22,7 +22,7 @@ class Sayer{
     async unsure(){
         switch (this.lang) {
             case 'ja-jp':
-                return await this.say('如何かな？');
+                return await this.say('とうかな？');
             case 'en-gb':
                 return await this.say(`I do not sure.`);
             case 'en-us':

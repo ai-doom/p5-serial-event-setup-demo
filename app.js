@@ -84,7 +84,7 @@ app.post('/text-to-speech/:lang', bodyParser.json(), function(req, res, next) {
 
     let params = {
         text: req.body.text,
-        model: voice_model,
+        voice: voice_model,
         accept: 'audio/webm'
       };
     
