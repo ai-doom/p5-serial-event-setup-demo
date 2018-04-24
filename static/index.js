@@ -23,15 +23,17 @@ board.on('point', point => {
 const siriKey = ' ';
 const keyboard = new Keybaord();
 keyboard.on('press', (e) =>{
-    if(e.key == siriKey){
+    if(e.key == siriKey && !isBusy()){
         record_begin();
+
+        keyboard.once('release', (e) =>{
+            if(e.key == siriKey){
+                record_end();
+            }
+        });
     }
 });
-keyboard.on('release', (e) =>{
-    if(e.key == siriKey){
-        record_end();
-    }
-});
+
 
 const microm = new Microm();
 
@@ -39,12 +41,28 @@ async function record_begin(){
     await microm.record();
     console.log('record_begin...');
     setTimeout(()=>{
-        swal('Recorder', 'recording...', 'info');
+        swal({
+            title: `Recorder`, 
+            text: "recording...", 
+            icon: 'info',
+            buttons: {
+                cancel: {value:false, visible: true},
+                confirm: false,
+            },
+        });
     }, 700)
 }
 
 async function record_end(){
-    swal('Recorder', 'recorded.', 'success');
+    swal({
+        title: `Recorder`, 
+        text: "transcoding...", 
+        icon: 'info',
+        buttons: {
+            cancel: {value:false, visible: false},
+            confirm: false,
+        },
+    });
     console.log('record_end.');
     await microm.stop();
     let mp3 = await microm.getMp3();
@@ -79,3 +97,40 @@ async function speech_to_text(soundBlob){
     results.map(r=> console.log(r.alternatives[0]));
     return results.map(r=> r.alternatives[0].transcript).join(' ');
 }
+
+async function text_to_speech(text, lang = language){
+    let results = await $.ajax({
+        type: 'POST',
+        url: `text-to-speech/${language}`,
+        data: JSON.stringify({text: text}),
+        contentType: "application/json; charset=utf-8",
+        cache: false,
+        xhrFields:{
+            responseType: 'blob'
+        },
+    });
+    return results;
+}
+
+function isBusy(){
+    let state = swal.getState();
+    return state.isOpen && state.actions.cancel.value === false;
+}
+
+keyboard.on('press', async (e) =>{
+    if(e.key == 't' && !isBusy()){
+        let input = await swal({
+            title: `Text to Speech:`, 
+            content: "input", 
+            buttons: {
+                cancel: {value:false, visible: true},
+                confirm: true,
+            },
+        });
+        
+        let result = await text_to_speech(input);
+        console.log(result)
+    }
+});
+
+window.isBusy = isBusy;
