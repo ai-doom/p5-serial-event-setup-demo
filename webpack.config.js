@@ -6,9 +6,9 @@ const
     SRC_DIR = path.resolve(__dirname, "src");
 
 module.exports = {
-    context: SRC_DIR,
+    context: __dirname,
 
-    entry: "./index",
+    entry: path.resolve("src", "./index"),
 
     output: {
         path:     DIST_DIR,
@@ -20,9 +20,9 @@ module.exports = {
     },
 
     devtool: 'source-map',
-    devServer: {
-        publicPath: DIST_DIR
-    },
+    // devServer: {
+    //     publicPath: __dirname
+    // },
 
     // module: {
     //   rules: [{
