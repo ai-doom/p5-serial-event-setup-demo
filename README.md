@@ -49,6 +49,10 @@ $ node app
 Keep pressing `space` while talking.
 
 ## Development
+Run the following cmd to build javascript in live time:
+``` bash
+$ npm run webpack
+```
 
 Main Interaction logic are in `static`. `app.js` is for communication with IBM server.
 

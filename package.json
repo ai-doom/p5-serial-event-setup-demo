@@ -4,7 +4,11 @@
   "description": "## How to run",
   "main": "app.js",
   "scripts": {
-    "test": "node app.js"
+    "start": "node app.js",
+    "build": "webpack --mode=development",
+    "dev": "webpack --mode=production && npm start",
+    "watch": "webpack --watch --mode=development",
+    "webpack": "webpack --mode=development && npm run watch"
   },
   "repository": {
     "type": "git",
@@ -19,6 +23,18 @@
   "dependencies": {
     "eventemitter2": "^5.0.1",
     "express": "^4.16.3",
+    "howler": "^2.0.9",
+    "jquery": "^3.3.1",
+    "microm": "^0.2.4",
+    "p5": "^0.6.0",
+    "serialport": "^6.2.0",
+    "sweetalert": "^2.1.0",
     "watson-developer-cloud": "^3.3.0"
+  },
+  "devDependencies": {
+    "extract-loader": "^2.0.1",
+    "less-loader": "^4.1.0",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15"
   }
 }
