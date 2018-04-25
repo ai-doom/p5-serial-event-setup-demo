@@ -113552,6 +113552,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(howler__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_2__);
+
+
 
 
 
@@ -113586,8 +113590,6 @@ async function text_to_speech(text, lang = default_language){
     return results;
 }
 
-const await_on = (obj, event) => new Promise(resolve => obj.once(event, resolve));
-
 async function playTextToAudioBlob(blob){
     let url = URL.createObjectURL( blob );
     let sound = new howler__WEBPACK_IMPORTED_MODULE_0__["Howl"]({
@@ -113595,7 +113597,7 @@ async function playTextToAudioBlob(blob){
         format: ['webm']
       });
     sound.play();
-    await await_on(sound, 'end');
+    await wait_until(sound, 'end');
     return sound;
 }
 
@@ -113634,6 +113636,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TextSpeech_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TextSpeech.js */ "./src/TextSpeech.js");
 /* harmony import */ var _Siri_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Siri.js */ "./src/Siri.js");
 /* harmony import */ var _Sayer_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Sayer.js */ "./src/Sayer.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_10__);
+
 
 
 
@@ -113726,8 +113731,6 @@ async function afterAskName(e){
     keyboard.once('press', if_siri_key_do(end_record_and_response));
     button1.once('press', end_record_and_response);
 }
-
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const microm = new microm__WEBPACK_IMPORTED_MODULE_2___default.a();
 var recordSometime = false;
@@ -114697,6 +114700,21 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.serialpor
     }
   };
 }));
+
+/***/ }),
+
+/***/ "./src/utils.js":
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+const wait_until = (obj, event) => new Promise(resolve => obj.once(event, resolve));
+
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 
 /***/ })
 

@@ -9,6 +9,7 @@ import {Keybaord} from './Keyboard.js'
 import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js'
 import Siri from './Siri.js'
 import Sayer from './Sayer.js'
+import './utils.js'
 
 let piezo = new ThresholdedSensor();
 let bend  = new ThresholdedSensor();
@@ -90,8 +91,6 @@ async function afterAskName(e){
     keyboard.once('press', if_siri_key_do(end_record_and_response));
     button1.once('press', end_record_and_response);
 }
-
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const microm = new Microm();
 var recordSometime = false;

@@ -1,6 +1,8 @@
 import {Howl, Howler} from 'howler'
 import $ from 'jquery'
 
+import './utils.js'
+
 var default_language = 'en-us';
 
 export
@@ -34,8 +36,6 @@ async function text_to_speech(text, lang = default_language){
     return results;
 }
 
-const await_on = (obj, event) => new Promise(resolve => obj.once(event, resolve));
-
 export
 async function playTextToAudioBlob(blob){
     let url = URL.createObjectURL( blob );
@@ -44,7 +44,7 @@ async function playTextToAudioBlob(blob){
         format: ['webm']
       });
     sound.play();
-    await await_on(sound, 'end');
+    await wait_until(sound, 'end');
     return sound;
 }
 
