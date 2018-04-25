@@ -113374,30 +113374,42 @@ class Keybaord extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
 
 /***/ }),
 
-/***/ "./src/Sayer.js":
-/*!**********************!*\
-  !*** ./src/Sayer.js ***!
-  \**********************/
-/*! exports provided: default */
+/***/ "./src/Sentence.js":
+/*!*************************!*\
+  !*** ./src/Sentence.js ***!
+  \*************************/
+/*! exports provided: Sentence, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Sayer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Sentence", function() { return Sentence; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SentenceLibrary; });
 /* harmony import */ var _TextSpeech_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TextSpeech.js */ "./src/TextSpeech.js");
 
 
-class Sayer{
+class Sentence{
+    constructor(text, language){
+        this.text = text;
+        this.language = language;
+    }
+    async play(){
+        let blob = await Object(_TextSpeech_js__WEBPACK_IMPORTED_MODULE_0__["text_to_speech"])(this.text, this.language);
+        return await Object(_TextSpeech_js__WEBPACK_IMPORTED_MODULE_0__["playTextToAudioBlob"])(blob);
+    }
+}
+
+class SentenceLibrary{
     constructor(language){
         this.lang = language
     }
-    async say(content, instant_return = true){
+    sentence(content, language = this.lang){
         if(typeof content == 'string'){
-            return await Object(_TextSpeech_js__WEBPACK_IMPORTED_MODULE_0__["text_to_speech_and_play"])(content, this.lang, instant_return);
+            return new Sentence(content, language);
         }else if(content instanceof Array){
             let text = content.randomElement();
             if(typeof text == 'string'){
-                return await Object(_TextSpeech_js__WEBPACK_IMPORTED_MODULE_0__["text_to_speech_and_play"])(content.randomElement(), this.lang, instant_return);
+                return new Sentence(text, language);
             }else{
                 throw TypeError("Must say Array of String!");
             }
@@ -113405,38 +113417,44 @@ class Sayer{
             throw TypeError("Must say string or Array of String!");
         }
     }
-    async unsure(){
+    unsure(){
         switch (this.lang) {
             case 'ja-jp':
-                return await this.say('とうかな？');
+                return this.sentence('とうかな？');
             case 'es-es':
-                return await this.say('No estoy seguro');
+                return this.sentence('No estoy seguro');
             case 'en-gb':
-                return await this.say(`I do not sure.`);
+                return this.sentence(`I do not sure.`);
             case 'en-us':
             default:
-                return await this.say(`I'm not sure.`);
+                return this.sentence(`I'm not sure.`);
         }
     }
-    async okey(what_s_done = ''){
+    okey(what_s_done = ''){
         switch (this.lang) {
             case 'ja-jp':
-                let candidates = ['了解', '承知しました']
+                let candidates = [
+                    '了解', 
+                    '承知しました'
+                ]
                 if(what_s_done){
                     candidates.push(what_s_done)
                 }
-                return await this.say(candidates);
+                return this.sentence(candidates);
         
             case 'en-us':
             case 'en-gb':
             default:
-                return await this.say([`Okay. `+what_s_done , 'Sure!']);
+                return this.sentence([
+                    `Okay. `+what_s_done , 
+                    'Sure!'
+                ]);
         }
     }
-    async askForName(){
+    askForName(){
         switch (this.lang) {
             case 'ja-jp':
-                
+                return this.sentence(`君のなは？`);
     
             case 'es-es':
                 
@@ -113444,13 +113462,13 @@ class Sayer{
             case 'en-us':
             case 'en-gb':
             default:
-                return await this.say(`What's your name?`);
+                return this.sentence(`What's your name?`);
         }
     }
-    async hi(name){
+    hi(name){
         switch (this.lang) {
             case 'ja-jp':
-                
+                return this.sentence(`こんにちは、${name}さん、どうがしましたが？`);
     
             case 'es-es':
                 
@@ -113458,7 +113476,7 @@ class Sayer{
             case 'en-us':
             case 'en-gb':
             default:
-                return await this.say(`Hi, ${name}, What can I do for you?`);
+                return this.sentence(`Hi, ${name}, What can I do for you?`);
         }
     }
 }
@@ -113518,7 +113536,7 @@ class Siri {
 /*!***************************!*\
   !*** ./src/TextSpeech.js ***!
   \***************************/
-/*! exports provided: speech_to_text, text_to_speech, playTextToAudioBlob, text_to_speech_and_play */
+/*! exports provided: speech_to_text, text_to_speech, playTextToAudioBlob */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -113526,13 +113544,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "speech_to_text", function() { return speech_to_text; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "text_to_speech", function() { return text_to_speech; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "playTextToAudioBlob", function() { return playTextToAudioBlob; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "text_to_speech_and_play", function() { return text_to_speech_and_play; });
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! howler */ "./node_modules/howler/dist/howler.js");
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(howler__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_2__);
 
 
 
@@ -113576,19 +113592,10 @@ async function playTextToAudioBlob(blob){
         format: ['webm']
       });
     sound.play();
-    await wait_until(sound, 'end');
+    await Object(_utils_js__WEBPACK_IMPORTED_MODULE_2__["wait_until"])(sound, 'end');
     return sound;
 }
 
-async function text_to_speech_and_play(text, lang, instant_return = false){
-    let blob = await text_to_speech(text, lang);
-    if(instant_return){
-        playTextToAudioBlob(blob);
-    }else{
-        await playTextToAudioBlob(blob);
-    }
-    return text
-}
 
 /***/ }),
 
@@ -113614,9 +113621,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Keyboard_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Keyboard.js */ "./src/Keyboard.js");
 /* harmony import */ var _TextSpeech_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TextSpeech.js */ "./src/TextSpeech.js");
 /* harmony import */ var _Siri_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Siri.js */ "./src/Siri.js");
-/* harmony import */ var _Sayer_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Sayer.js */ "./src/Sayer.js");
+/* harmony import */ var _Sentence_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Sentence.js */ "./src/Sentence.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_utils_js__WEBPACK_IMPORTED_MODULE_10__);
 
 
 
@@ -113686,9 +113692,10 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 async function new_conversation(){
-    let sayer = new _Sayer_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
-    let questionText = await sayer.askForName();
-    pop_busy_dialog(questionText, false);
+    let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
+    let question = talker.askForName();
+    question.play();
+    pop_busy_dialog(question.text, false);
     
     record_begin();
     keyboard.once('press', if_siri_key_do(afterAskName));
@@ -113701,10 +113708,11 @@ keyboard.on('press', async (e) =>{
     }
 });
 async function afterAskName(e){
-    let sayer = new _Sayer_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
+    let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
     let name = await record_might_end();
-    let questionText = await sayer.hi(name);
-    pop_busy_dialog(questionText, false);
+    let question = talker.hi(name);
+    question.play();
+    pop_busy_dialog(question.text, false);
 
     record_begin(true);
     keyboard.once('press', if_siri_key_do(end_record_and_response));
@@ -113723,7 +113731,7 @@ async function record_begin(pop_up_dialog = false){
         siri.start();
     }, 500);
 
-    await wait(700);
+    await Object(_utils_js__WEBPACK_IMPORTED_MODULE_10__["wait"])(700);
     if(aborted){
         aborted = false;
         return false;
@@ -113807,13 +113815,7 @@ keyboard.on('press', async (e) =>{
         if(input){
             let question = input;
             console.log('question', question);
-            let answer = await reason_question(question);
-            console.log('answer', answer);
-            sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                title: answer,
-                text : question,
-                button: false,
-            })
+            await responseToQuestion(question)
         }
     }
 });
@@ -113827,18 +113829,23 @@ async function end_record_and_response(){
     let question = await record_might_end();
     console.log('question', question);
     if(question){
-        let answer = await reason_question(question);
-        console.log('answer', answer);
-        sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-            title: answer,
-            text : question,
-            button: false,
-        })
+        await responseToQuestion(question)
     }
 }
 
-async function reason_question(question){
-    let sayer = new _Sayer_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
+async function responseToQuestion(question){
+    let answer = reason_question(question);
+    answer.play()
+    console.log('answer', answer);
+    sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
+        title: answer.text,
+        text : question,
+        button: false,
+    })
+}
+
+function reason_question(question){
+    let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_9__["default"](language);
     switch (language) {
         case 'ja-jp':
             if(question.match(/言語/i)){
@@ -113853,11 +113860,11 @@ async function reason_question(question){
                     language = 'es-es';
                     new_langauge_literal = 'スペイン語'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`${new_langauge_literal} に換えました。`);
+                return talker.okey(`${new_langauge_literal} に換えました。`);
             }else{
-                return await sayer.unsure();
+                return talker.unsure();
             }
 
         case 'es-es':
@@ -113870,11 +113877,11 @@ async function reason_question(question){
                     language = 'ja-jp';
                     new_langauge_literal = 'japonés'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`ha cambiado a ${new_langauge_literal}.`);
+                return talker.okey(`ha cambiado a ${new_langauge_literal}.`);
             }
-            return await sayer.unsure();
+            return talker.unsure();
 
         case 'en-us':
         case 'en-gb':
@@ -113895,14 +113902,14 @@ async function reason_question(question){
                     language = 'ja-jp';
                     new_langauge_literal = 'Japanese'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`Language switched to ${new_langauge_literal}.`);
+                return talker.okey(`Language switched to ${new_langauge_literal}.`);
             }else{
-                return await sayer.unsure();
+                return talker.unsure();
             }
     }
-    return await sayer.unsure()
+    return talker.unsure()
 }
 
 /***/ }),
@@ -114686,8 +114693,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.serialpor
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: wait_until, wait */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_until", function() { return wait_until; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait", function() { return wait; });
 
 
 const wait_until = (obj, event) => new Promise(resolve => obj.once(event, resolve));
