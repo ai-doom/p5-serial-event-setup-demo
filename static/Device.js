@@ -44,11 +44,11 @@ export class ThresholdedSensor extends EventEmitter2{
         let relativeValue = value/this.mean;
         this.value = relativeValue;
     }
-    reset(values){
+    reset(values, outlierMultiplier = 1.5){
         // debugger
         let avg = mean(values);
         let vari = variance(values);
-        let threshold = avg + 10*vari;
+        let threshold = avg + outlierMultiplier * vari;
         this.threshold = threshold;
         this.mean = avg;
     }

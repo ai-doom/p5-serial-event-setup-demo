@@ -1,7 +1,13 @@
 import './libraries/p5.js';
 import './libraries/p5.serialport.js';
 import './libraries/eventemitter2.js';
-
+import {
+    CapasitiveSensor,
+    ThresholdedSensor,
+    Button,
+    AnalogReader,
+    CatagorialReader
+} from './Device.js'
 export class Board extends EventEmitter2{
 
     constructor(devices = []){
@@ -15,7 +21,7 @@ export class Board extends EventEmitter2{
         
         this.devices = devices;
 
-        this.capacitors = this.devices.filter(d=>d instanceof CapasitiveSensor)
+        // this.capacitors = this.devices.filter(d=>d instanceof CapasitiveSensor)
         this.buttons    = this.devices.filter(d=>d instanceof Button)
         this.last_some_capacitors_activated = false;
         this.collectedValues = null;
@@ -72,6 +78,7 @@ export class Board extends EventEmitter2{
     processPoint(point){
         this.devices.map((device, i)=>{
             if(device instanceof CapasitiveSensor||
+                device instanceof ThresholdedSensor ||
                device instanceof Button||
                device instanceof AnalogReader||
                device instanceof CatagorialReader){
