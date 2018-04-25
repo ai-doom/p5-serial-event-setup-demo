@@ -113550,12 +113550,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "text_to_speech_and_play", function() { return text_to_speech_and_play; });
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! howler */ "./node_modules/howler/dist/howler.js");
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(howler__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 var default_language = 'en-us';
 
 async function speech_to_text(soundBlob, lang = default_language){
-    let results = await $.ajax({
+    let results = await jquery__WEBPACK_IMPORTED_MODULE_1___default.a.ajax({
         type: 'POST',
         url: `speech-to-text/${lang}`,
         data: soundBlob,
@@ -113570,7 +113573,7 @@ async function speech_to_text(soundBlob, lang = default_language){
 }
 
 async function text_to_speech(text, lang = default_language){
-    let results = await $.ajax({
+    let results = await jquery__WEBPACK_IMPORTED_MODULE_1___default.a.ajax({
         type: 'POST',
         url: `text-to-speech/${lang}`,
         data: JSON.stringify({text: text}),

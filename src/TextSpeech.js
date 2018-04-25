@@ -1,4 +1,5 @@
 import {Howl, Howler} from 'howler'
+import $ from 'jquery'
 
 var default_language = 'en-us';
 
