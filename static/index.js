@@ -11,9 +11,9 @@ let piezo = new ThresholdedSensor();
 let bend  = new ThresholdedSensor();
 let photo = new ThresholdedSensor();
 let touch = new ThresholdedSensor();
-let button1 = new Button();
-let button2 = new Button();
-let button3 = new Button();
+let button1 = new Button(0, 0);
+let button2 = new Button(0, 0);
+let button3 = new Button(0, 0);
 
 let devices = [piezo, bend, photo, touch, button1, button2, button3]
 const board = new Board(devices);
@@ -25,10 +25,21 @@ board.connect({baudrate: 9600});
 // });
 
 // only works if device is set: `let board = new Board([button1]);`
-board.on('point', point => {
-    console.log(`point`, point)
-});
-
+// board.on('point', point => {
+//     console.log(`point`, point)
+// });
+button1.on('press', ()=>{
+    if(!isBusy()){
+        record_begin(true);
+        button1.once('release', end_record_and_response);
+    }
+})
+button2.on('press', ()=>{
+    console.log('press','button2')
+})
+button3.on('press', ()=>{
+    console.log('press','button3')
+})
 const siri = new Siri();
 
 const siriKey = ' ';
@@ -51,14 +62,19 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
         },
     })
 }
+async function new_conversation(){
+    let sayer = new Sayer(language);
+    let questionText = await sayer.askForName();
+    pop_busy_dialog(questionText, false);
+    
+    record_begin();
+    keyboard.once('press', if_siri_key_do(afterAskName));
+    button1.once('press', afterAskName);
+}
+
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
-        let sayer = new Sayer(language);
-        let questionText = await sayer.askForName();
-        pop_busy_dialog(questionText, false);
-        
-        record_begin();
-        keyboard.once('press', if_siri_key_do(afterAskName));
+        await new_conversation();
     }
 });
 async function afterAskName(e){
@@ -69,6 +85,7 @@ async function afterAskName(e){
 
     record_begin(true);
     keyboard.once('press', if_siri_key_do(end_record_and_response));
+    button1.once('press', end_record_and_response);
 }
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -92,7 +109,7 @@ async function record_begin(pop_up_dialog = false){
     }
     recordSometime = true;
     if(pop_up_dialog){
-        pop_busy_dialog('Listening...', ture);
+        pop_busy_dialog('Listening...', true);
     }
     return true;
 }
