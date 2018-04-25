@@ -1,7 +1,7 @@
 import {Howl, Howler} from 'howler'
 import $ from 'jquery'
 
-import './utils.js'
+import {wait_until} from './utils.js'
 
 var default_language = 'en-us';
 
@@ -46,15 +46,4 @@ async function playTextToAudioBlob(blob){
     sound.play();
     await wait_until(sound, 'end');
     return sound;
-}
-
-export
-async function text_to_speech_and_play(text, lang, instant_return = false){
-    let blob = await text_to_speech(text, lang);
-    if(instant_return){
-        playTextToAudioBlob(blob);
-    }else{
-        await playTextToAudioBlob(blob);
-    }
-    return text
 }

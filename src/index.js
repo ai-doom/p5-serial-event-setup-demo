@@ -8,8 +8,8 @@ import {TimeAnalysizer, Button, ThresholdedSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js'
 import Siri from './Siri.js'
-import Sayer from './Sayer.js'
-import './utils.js'
+import Talker , {Sentence} from './Sentence.js'
+import {wait} from './utils.js'
 
 let piezo = new ThresholdedSensor();
 let bend  = new ThresholdedSensor();
@@ -67,9 +67,10 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 async function new_conversation(){
-    let sayer = new Sayer(language);
-    let questionText = await sayer.askForName();
-    pop_busy_dialog(questionText, false);
+    let talker = new Talker(language);
+    let question = talker.askForName();
+    question.play();
+    pop_busy_dialog(question.text, false);
     
     record_begin();
     keyboard.once('press', if_siri_key_do(afterAskName));
@@ -82,10 +83,11 @@ keyboard.on('press', async (e) =>{
     }
 });
 async function afterAskName(e){
-    let sayer = new Sayer(language);
+    let talker = new Talker(language);
     let name = await record_might_end();
-    let questionText = await sayer.hi(name);
-    pop_busy_dialog(questionText, false);
+    let question = talker.hi(name);
+    question.play();
+    pop_busy_dialog(question.text, false);
 
     record_begin(true);
     keyboard.once('press', if_siri_key_do(end_record_and_response));
@@ -188,13 +190,7 @@ keyboard.on('press', async (e) =>{
         if(input){
             let question = input;
             console.log('question', question);
-            let answer = await reason_question(question);
-            console.log('answer', answer);
-            swal({
-                title: answer,
-                text : question,
-                button: false,
-            })
+            await responseToQuestion(question)
         }
     }
 });
@@ -208,18 +204,23 @@ async function end_record_and_response(){
     let question = await record_might_end();
     console.log('question', question);
     if(question){
-        let answer = await reason_question(question);
-        console.log('answer', answer);
-        swal({
-            title: answer,
-            text : question,
-            button: false,
-        })
+        await responseToQuestion(question)
     }
 }
 
-async function reason_question(question){
-    let sayer = new Sayer(language);
+async function responseToQuestion(question){
+    let answer = reason_question(question);
+    answer.play()
+    console.log('answer', answer);
+    swal({
+        title: answer.text,
+        text : question,
+        button: false,
+    })
+}
+
+function reason_question(question){
+    let talker = new Talker(language);
     switch (language) {
         case 'ja-jp':
             if(question.match(/言語/i)){
@@ -234,11 +235,11 @@ async function reason_question(question){
                     language = 'es-es';
                     new_langauge_literal = 'スペイン語'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`${new_langauge_literal} に換えました。`);
+                return talker.okey(`${new_langauge_literal} に換えました。`);
             }else{
-                return await sayer.unsure();
+                return talker.unsure();
             }
 
         case 'es-es':
@@ -251,11 +252,11 @@ async function reason_question(question){
                     language = 'ja-jp';
                     new_langauge_literal = 'japonés'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`ha cambiado a ${new_langauge_literal}.`);
+                return talker.okey(`ha cambiado a ${new_langauge_literal}.`);
             }
-            return await sayer.unsure();
+            return talker.unsure();
 
         case 'en-us':
         case 'en-gb':
@@ -276,12 +277,12 @@ async function reason_question(question){
                     language = 'ja-jp';
                     new_langauge_literal = 'Japanese'
                 }else{
-                    return await sayer.unsure();
+                    return talker.unsure();
                 }
-                return await sayer.okey(`Language switched to ${new_langauge_literal}.`);
+                return talker.okey(`Language switched to ${new_langauge_literal}.`);
             }else{
-                return await sayer.unsure();
+                return talker.unsure();
             }
     }
-    return await sayer.unsure()
+    return talker.unsure()
 }
