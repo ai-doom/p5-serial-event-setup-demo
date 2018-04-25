@@ -4,7 +4,7 @@ import Microm from 'microm'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
-import {Button, ThresholdedSensor} from './Device.js'
+import {TimeAnalysizer, Button, ThresholdedSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js'
 import Siri from './Siri.js'
@@ -19,7 +19,7 @@ let button1 = new Button(0, 0);
 let button2 = new Button(0, 0);
 let button3 = new Button(0, 0);
 
-let devices = [piezo, bend, photo, touch, button1, button2, button3]
+let devices = [new TimeAnalysizer(), piezo, bend, photo, touch, button1, button2, button3]
 const board = new Board(devices);
 board.connect({baudrate: 9600});
 

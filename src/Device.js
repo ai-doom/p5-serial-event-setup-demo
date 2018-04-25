@@ -1,6 +1,19 @@
 import EventEmitter2 from "eventemitter2"
 
-export class Button extends EventEmitter2{
+export
+class InputDevice extends EventEmitter2{
+    tick(value){
+    }
+}
+
+export
+class TimeAnalysizer extends InputDevice{
+    tick(elapsed){
+    }
+}
+
+export 
+class Button extends InputDevice{
     constructor(initialValue = 1, offValue = 1){
         super();
         this.lastValue = initialValue;
@@ -21,7 +34,9 @@ export class Button extends EventEmitter2{
         }
     }
 }
-export class ThresholdedSensor extends EventEmitter2{
+
+export 
+class ThresholdedSensor extends InputDevice{
     constructor(threshold = 100){
         super();
         this.threshold = threshold;
@@ -53,39 +68,16 @@ export class ThresholdedSensor extends EventEmitter2{
         this.mean = avg;
     }
 }
-export class CapasitiveSensor extends EventEmitter2{
-    constructor(threshold = 100){
-        super();
-        this.threshold = threshold;
-        this.value = 1;
-        this.mean = 1;
-        this.state = false;
-    }
-    tick(value){
-        
-        let over  = value > this.threshold;
-        
-        if(this.state != over){
-            if(over == true){
-                this.emit("activate");
-            }else{
-                this.emit("release");
-            }
-            this.state = over;
-        }
-        let relativeValue = value/this.mean;
-        this.value = relativeValue;
-    }
+
+export 
+class CapasitiveSensor extends ThresholdedSensor{
     reset(values){
-        // debugger
-        let avg = mean(values);
-        let vari = variance(values);
-        let threshold = avg + 10*vari;
-        this.threshold = threshold;
-        this.mean = avg;
+        return super.reset(values, 10)
     }
 }
-export class AnalogReader extends EventEmitter2{
+
+export 
+class AnalogReader extends InputDevice{
     constructor(){
         super();
         this.value = 0;
@@ -96,7 +88,8 @@ export class AnalogReader extends EventEmitter2{
     }
 }
 
-export class CatagorialReader extends EventEmitter2{
+export 
+class CatagorialReader extends InputDevice{
     constructor(defaultValue = 0){
         super();
         this.value = defaultValue;

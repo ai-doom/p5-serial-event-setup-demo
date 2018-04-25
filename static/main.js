@@ -113160,11 +113160,6 @@ class Board extends eventemitter2__WEBPACK_IMPORTED_MODULE_2___default.a{
         }
         
         this.devices = devices;
-
-        // this.capacitors = this.devices.filter(d=>d instanceof CapasitiveSensor)
-        this.buttons    = this.devices.filter(d=>d instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["Button"])
-        this.last_some_capacitors_activated = false;
-        this.collectedValues = null;
     }
     connect(options){
         // serial.on('data', serialEvent);  // callback for when new data arrives
@@ -113205,11 +113200,11 @@ class Board extends eventemitter2__WEBPACK_IMPORTED_MODULE_2___default.a{
 
     processLine(buffer){
         let point = String.fromCharCode(...buffer).split('\t').map(s=>+s);
-        if( point.length == this.devices.length+1){
+        if( point.length == this.devices.length){
             this.emit('point', point);
         }else{
             this.emit('warning', {
-                error: `Miss alignment of devices. Should be ${this.devices.length+1}, getting ${point.length}.`,
+                error: `Miss alignment of devices. Should be ${this.devices.length}, getting ${point.length}.`,
                 point: point
             });
         }        
@@ -113217,12 +113212,8 @@ class Board extends eventemitter2__WEBPACK_IMPORTED_MODULE_2___default.a{
 
     processPoint(point){
         this.devices.map((device, i)=>{
-            if(device instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["CapasitiveSensor"]||
-                device instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["ThresholdedSensor"] ||
-               device instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["Button"]||
-               device instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["AnalogReader"]||
-               device instanceof _Device_js__WEBPACK_IMPORTED_MODULE_3__["CatagorialReader"]){
-                device.tick(point[i+1]);
+            if(device instanceof InputDevice){
+                device.tick(point[i]);
             }
         });
     }
@@ -113238,11 +113229,13 @@ class Board extends eventemitter2__WEBPACK_IMPORTED_MODULE_2___default.a{
 /*!***********************!*\
   !*** ./src/Device.js ***!
   \***********************/
-/*! exports provided: Button, ThresholdedSensor, CapasitiveSensor, AnalogReader, CatagorialReader */
+/*! exports provided: InputDevice, TimeAnalysizer, Button, ThresholdedSensor, CapasitiveSensor, AnalogReader, CatagorialReader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "InputDevice", function() { return InputDevice; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TimeAnalysizer", function() { return TimeAnalysizer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Button", function() { return Button; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ThresholdedSensor", function() { return ThresholdedSensor; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CapasitiveSensor", function() { return CapasitiveSensor; });
@@ -113252,7 +113245,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(eventemitter2__WEBPACK_IMPORTED_MODULE_0__);
 
 
-class Button extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+class InputDevice extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+    tick(value){
+    }
+}
+
+class TimeAnalysizer extends InputDevice{
+    tick(elapsed){
+    }
+}
+
+class Button extends InputDevice{
     constructor(initialValue = 1, offValue = 1){
         super();
         this.lastValue = initialValue;
@@ -113273,7 +113276,8 @@ class Button extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
         }
     }
 }
-class ThresholdedSensor extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+
+class ThresholdedSensor extends InputDevice{
     constructor(threshold = 100){
         super();
         this.threshold = threshold;
@@ -113305,39 +113309,14 @@ class ThresholdedSensor extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___defau
         this.mean = avg;
     }
 }
-class CapasitiveSensor extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
-    constructor(threshold = 100){
-        super();
-        this.threshold = threshold;
-        this.value = 1;
-        this.mean = 1;
-        this.state = false;
-    }
-    tick(value){
-        
-        let over  = value > this.threshold;
-        
-        if(this.state != over){
-            if(over == true){
-                this.emit("activate");
-            }else{
-                this.emit("release");
-            }
-            this.state = over;
-        }
-        let relativeValue = value/this.mean;
-        this.value = relativeValue;
-    }
+
+class CapasitiveSensor extends ThresholdedSensor{
     reset(values){
-        // debugger
-        let avg = mean(values);
-        let vari = variance(values);
-        let threshold = avg + 10*vari;
-        this.threshold = threshold;
-        this.mean = avg;
+        return super.reset(values, 10)
     }
 }
-class AnalogReader extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+
+class AnalogReader extends InputDevice{
     constructor(){
         super();
         this.value = 0;
@@ -113348,7 +113327,7 @@ class AnalogReader extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
     }
 }
 
-class CatagorialReader extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+class CatagorialReader extends InputDevice{
     constructor(defaultValue = 0){
         super();
         this.value = defaultValue;
@@ -113659,7 +113638,7 @@ let button1 = new _Device_js__WEBPACK_IMPORTED_MODULE_5__["Button"](0, 0);
 let button2 = new _Device_js__WEBPACK_IMPORTED_MODULE_5__["Button"](0, 0);
 let button3 = new _Device_js__WEBPACK_IMPORTED_MODULE_5__["Button"](0, 0);
 
-let devices = [piezo, bend, photo, touch, button1, button2, button3]
+let devices = [new _Device_js__WEBPACK_IMPORTED_MODULE_5__["TimeAnalysizer"](), piezo, bend, photo, touch, button1, button2, button3]
 const board = new _Arduino_js__WEBPACK_IMPORTED_MODULE_4__["Board"](devices);
 board.connect({baudrate: 9600});
 

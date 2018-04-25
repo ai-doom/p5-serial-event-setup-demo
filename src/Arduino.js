@@ -2,13 +2,7 @@ import p5 from 'p5'
 import './libraries/p5.serialport.js'
 import EventEmitter2 from "eventemitter2"
 
-import {
-    CapasitiveSensor,
-    ThresholdedSensor,
-    Button,
-    AnalogReader,
-    CatagorialReader
-} from './Device.js'
+import './Device.js'
 
 export 
 class Board extends EventEmitter2{
@@ -23,11 +17,6 @@ class Board extends EventEmitter2{
         }
         
         this.devices = devices;
-
-        // this.capacitors = this.devices.filter(d=>d instanceof CapasitiveSensor)
-        this.buttons    = this.devices.filter(d=>d instanceof Button)
-        this.last_some_capacitors_activated = false;
-        this.collectedValues = null;
     }
     connect(options){
         // serial.on('data', serialEvent);  // callback for when new data arrives
@@ -68,11 +57,11 @@ class Board extends EventEmitter2{
 
     processLine(buffer){
         let point = String.fromCharCode(...buffer).split('\t').map(s=>+s);
-        if( point.length == this.devices.length+1){
+        if( point.length == this.devices.length){
             this.emit('point', point);
         }else{
             this.emit('warning', {
-                error: `Miss alignment of devices. Should be ${this.devices.length+1}, getting ${point.length}.`,
+                error: `Miss alignment of devices. Should be ${this.devices.length}, getting ${point.length}.`,
                 point: point
             });
         }        
@@ -80,12 +69,8 @@ class Board extends EventEmitter2{
 
     processPoint(point){
         this.devices.map((device, i)=>{
-            if(device instanceof CapasitiveSensor||
-                device instanceof ThresholdedSensor ||
-               device instanceof Button||
-               device instanceof AnalogReader||
-               device instanceof CatagorialReader){
-                device.tick(point[i+1]);
+            if(device instanceof InputDevice){
+                device.tick(point[i]);
             }
         });
     }
