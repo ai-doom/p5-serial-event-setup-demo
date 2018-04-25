@@ -7,13 +7,19 @@ import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js';
 import Siri from './Siri.js'
 import Sayer from './Sayer.js';
 
+let piezo = new ThresholdedSensor();
+let bend  = new ThresholdedSensor();
+let photo = new ThresholdedSensor();
+let touch = new ThresholdedSensor();
+let button1 = new Button();
+let button2 = new Button();
+let button3 = new Button();
 
-// let button1 = Button();
-
-const board = new Board();
+let devices = [piezo, bend, photo, touch, button1, button2, button3]
+const board = new Board(devices);
 board.connect({baudrate: 9600});
 
-// 
+// debug raw value
 // board.on('line', line => {
 //     console.log(`line`, String.fromCharCode(...line))
 // });
