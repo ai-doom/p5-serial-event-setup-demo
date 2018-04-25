@@ -21,6 +21,38 @@ export class Button extends EventEmitter2{
         }
     }
 }
+export class ThresholdedSensor extends EventEmitter2{
+    constructor(threshold = 100){
+        super();
+        this.threshold = threshold;
+        this.value = 1;
+        this.mean = 1;
+        this.state = false;
+    }
+    tick(value){
+        
+        let over  = value > this.threshold;
+        
+        if(this.state != over){
+            if(over == true){
+                this.emit("activate");
+            }else{
+                this.emit("release");
+            }
+            this.state = over;
+        }
+        let relativeValue = value/this.mean;
+        this.value = relativeValue;
+    }
+    reset(values){
+        // debugger
+        let avg = mean(values);
+        let vari = variance(values);
+        let threshold = avg + 10*vari;
+        this.threshold = threshold;
+        this.mean = avg;
+    }
+}
 export class CapasitiveSensor extends EventEmitter2{
     constructor(threshold = 100){
         super();

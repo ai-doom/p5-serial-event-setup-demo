@@ -23,6 +23,8 @@ class Sayer{
         switch (this.lang) {
             case 'ja-jp':
                 return await this.say('とうかな？');
+            case 'es-es':
+                return await this.say('No estoy seguro');
             case 'en-gb':
                 return await this.say(`I do not sure.`);
             case 'en-us':
@@ -42,7 +44,7 @@ class Sayer{
             case 'en-us':
             case 'en-gb':
             default:
-                return await this.say([`Okey. `+what_s_done , 'Sure!']);
+                return await this.say([`Okay. `+what_s_done , 'Sure!']);
         }
     }
     async askForName(){

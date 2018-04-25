@@ -1,13 +1,13 @@
 import  './libraries/jquery.min.js';
 import {Board} from './Arduino.js';
+import {Button, ThresholdedSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js';
 import './libraries/howler.js';
 import {speech_to_text, text_to_speech_and_play} from './TextSpeech.js';
 import Siri from './Siri.js'
 import Sayer from './Sayer.js';
 
-// uncomment  and changge to import devices
-// import {Button} from './Devices.js';
+
 // let button1 = Button();
 
 const board = new Board();
@@ -61,7 +61,7 @@ async function afterAskName(e){
     let questionText = await sayer.hi(name);
     pop_busy_dialog(questionText, false);
 
-    record_begin();
+    record_begin(true);
     keyboard.once('press', if_siri_key_do(end_record_and_response));
 }
 
@@ -119,7 +119,7 @@ async function record_end(){
         text = await speech_to_text(mp3.blob, language);
     }catch(e){
         console.warn(e);
-        swal("Error", "Cannot transcode.", "error");
+        swal({title:"Error", text:"Cannot transcode.", icon:"error", button: false,});
         return false
     }
     if(text !== null){
@@ -217,6 +217,19 @@ async function reason_question(question){
             }
 
         case 'es-es':
+            if(question.match(/idioma/i)){
+                let new_langauge_literal = '';
+                if(question.match(/inglés/i)){
+                    language = 'en-us';
+                    new_langauge_literal = 'inglés'
+                }else if(question.match(/japonés/i)){
+                    language = 'ja-jp';
+                    new_langauge_literal = 'japonés'
+                }else{
+                    return await sayer.unsure();
+                }
+                return await sayer.okey(`ha cambiado a ${new_langauge_literal}.`);
+            }
             return await sayer.unsure();
 
         case 'en-us':
