@@ -101,4 +101,4 @@ app.post('/text-to-speech/:lang', bodyParser.json(), function(req, res, next) {
 app.use('/', express.static('static'));
 
 
-app.listen(5000, () => console.log('Voice Of Doom Web Server listening on port 5000!'))
+app.listen(5080, () => console.log('Voice Of Doom Web Server listening on port 5080!'))
