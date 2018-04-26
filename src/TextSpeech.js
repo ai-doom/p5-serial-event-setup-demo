@@ -18,8 +18,8 @@ async function speech_to_text(soundBlob, lang = default_language){
     if(results.error){
         throw results.error;
     }
-    results.map(r=> console.log(r.alternatives[0]));
-    return results.map(r=> r.alternatives[0].transcript).join(' ');
+    
+    return conclude_results(results);
 }
 
 export
@@ -65,8 +65,25 @@ async function getAuthorizations(){
     return [token_speech_to_text, token_text_to_speech]
 }
 
+function conclude_results(results){
+
+    results.map(r => console.log(r.alternatives[0]));
+
+    return results.map(r=> r.alternatives[0].transcript).join(', ');
+}
+
+var stream;
+/**
+ * Record Mic and convert to string
+ * 
+ * 
+ * @param {any} lang langauge 
+ * @param {boolean} [autoStop=true] `false` and call `mic_stop()` to manually get it stoped
+ * @param {any} [outputElement=undefined] continously modifies this element when in recording
+ * @returns text recorded
+ */
 export
-async function mic_to_steam(lang, outputElement){
+async function mic_to_text(lang, autoStop = true, outputElement = undefined){
     let language_model = 'en-US_BroadbandModel';
     if(lang){
         switch (lang) {
@@ -86,7 +103,7 @@ async function mic_to_steam(lang, outputElement){
         }
     }
 
-    let stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
+    stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
         token: token_speech_to_text,
         keepMicrophone: true,
         outputElement: outputElement,
@@ -94,7 +111,7 @@ async function mic_to_steam(lang, outputElement){
     });
 
     stream.on('data', (data) => {
-        if(data.results[0] && data.results[0].final) {
+        if(autoStop && data.results[0] && data.results[0].final) {
             stream.stop();
             stream.emit('done', data.results);
         }
@@ -102,7 +119,23 @@ async function mic_to_steam(lang, outputElement){
 
     let  results = await wait_on(stream, 'done')
 
-    results.map(r => console.log(r.alternatives[0]));
+    return conclude_results(results);
+}
 
-    return results.map(r=> r.alternatives[0].transcript).join(', ');
+/**
+ * Stop recording the mic
+ * 
+ * 
+ * @returns text recorded
+ */
+export 
+async function mic_stop(){
+    stream.on('data', (data) => {
+        stream.stop();
+        stream.emit('done', data.results);
+    });
+
+    let  results = await wait_on(stream, 'done')
+
+    return conclude_results(results);
 }

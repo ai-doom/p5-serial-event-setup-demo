@@ -84,7 +84,7 @@ async function new_conversation(){
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
         // await new_conversation();
-        let result = await TextSpeech.mic_to_steam()
+        let result = await TextSpeech.mic_to_text()
         console.log(result)
     }
 });
