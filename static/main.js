@@ -113798,7 +113798,7 @@ keyboard.on('press', async (e) =>{
             },
         });
         if(input){
-            await Object(_TextSpeech_js__WEBPACK_IMPORTED_MODULE_7__["text_to_speech_and_play"])();
+            await text_to_speech_and_play();
         }
     }
 });
