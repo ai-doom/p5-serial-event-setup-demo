@@ -1,7 +1,8 @@
 import {Howl, Howler} from 'howler'
 import $ from 'jquery'
+import WatsonSpeech from 'watson-speech'
 
-import {wait_until} from './utils.js'
+import {wait_until, wait_on} from './utils.js'
 
 var default_language = 'en-us';
 
@@ -46,4 +47,62 @@ async function playTextToAudioBlob(blob){
     sound.play();
     await wait_until(sound, 'end');
     return sound;
+}
+
+/* IBM API
+ * Allows for stream
+ */
+
+var token_speech_to_text = '';
+var token_text_to_speech = '';
+
+export 
+async function getAuthorizations(){
+    [token_speech_to_text, token_text_to_speech] = await Promise.all([
+        $.get('/token/speech-to-text'),
+        $.get('/token/text-to-speech')
+    ])
+    return [token_speech_to_text, token_text_to_speech]
+}
+
+export
+async function mic_to_steam(lang, outputElement){
+    let language_model = 'en-US_BroadbandModel';
+    if(lang){
+        switch (lang) {
+            case 'ja-jp':
+                language_model  = 'ja-JP_BroadbandModel';
+                break;
+            case 'en-gb':
+                language_model  = 'en-GB_BroadbandModel';
+                break;
+            case 'es-es':
+                language_model  = 'es-ES_BroadbandModel';
+                break;
+            case 'en-us':
+            default:
+                language_model = 'en-US_BroadbandModel';
+                break;
+        }
+    }
+
+    let stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
+        token: token_speech_to_text,
+        keepMicrophone: true,
+        outputElement: outputElement,
+        objectMode: true
+    });
+
+    stream.on('data', (data) => {
+        if(data.results[0] && data.results[0].final) {
+            stream.stop();
+            stream.emit('done', data.results);
+        }
+    });
+
+    let  results = await wait_on(stream, 'done')
+
+    results.map(r => console.log(r.alternatives[0]));
+
+    return results.map(r=> r.alternatives[0].transcript).join(', ');
 }

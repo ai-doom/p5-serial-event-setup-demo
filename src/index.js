@@ -6,7 +6,7 @@ import swal from 'sweetalert'
 import {Board} from './Arduino.js'
 import {TimeAnalysizer, Button, ThresholdedSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
-import {speech_to_text} from './TextSpeech.js'
+import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
 import Talker , {Sentence} from './Sentence.js'
 import {wait} from './utils.js'
@@ -44,6 +44,10 @@ button2.on('press', ()=>{
 button3.on('press', ()=>{
     console.log('press','button3')
 })
+
+
+TextSpeech.getAuthorizations()
+
 const siri = new Siri();
 
 const siriKey = ' ';
@@ -79,7 +83,9 @@ async function new_conversation(){
 
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
-        await new_conversation();
+        // await new_conversation();
+        let result = await TextSpeech.mic_to_steam()
+        console.log(result)
     }
 });
 async function afterAskName(e){
