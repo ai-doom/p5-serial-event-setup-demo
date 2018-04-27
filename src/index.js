@@ -1,15 +1,16 @@
 import $ from "jquery"
 import {Howl, Howler} from 'howler'
-import Microm from 'microm'
+// import Microm from 'microm'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
 import {TimeAnalysizer, Button, ThresholdedSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
-import {speech_to_text} from './TextSpeech.js'
+import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
 import Talker , {Sentence} from './Sentence.js'
 import {wait} from './utils.js'
+import { EventEmitter2 } from "eventemitter2";
 
 let piezo = new ThresholdedSensor();
 let bend  = new ThresholdedSensor();
@@ -32,29 +33,58 @@ board.connect({baudrate: 9600});
 // board.on('point', point => {
 //     console.log(`point`, point)
 // });
-button1.on('press', ()=>{
-    if(!isBusy()){
-        record_begin(true);
-        button1.once('release', end_record_and_response);
-    }
-})
+
+
 button2.on('press', ()=>{
     console.log('press','button2')
 })
 button3.on('press', ()=>{
     console.log('press','button3')
 })
+
+
+TextSpeech.getAuthorizations()
+
 const siri = new Siri();
 
-const siriKey = ' ';
-const if_siri_key_not_busy_do =  (async_callable) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
-const if_siri_key_do =  (async_callable) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
+const default_siri_key = ' ';
+const if_siri_key_not_busy_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
+const if_siri_key_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
 
 const keyboard = new Keybaord();
-keyboard.on('press', if_siri_key_not_busy_do(  () =>{
-    record_begin(true);
-    keyboard.once('release', if_siri_key_do(end_record_and_response));
-}));
+
+class SiriButton extends EventEmitter2{
+    constructor(devices, keyboard){
+        super()
+        devices.map(d=>d.on('press', e=>this.emit('press', e)))
+        devices.map(d=>d.on('release', e=>this.emit('release', e)))
+
+        keyboard.on('press', (e)=>{
+            if(e.key == default_siri_key){
+                this.emit('press', e)
+            }
+        })
+        keyboard.on('release', (e)=>{
+            if(e.key == default_siri_key){
+                this.emit('release', e)
+            }
+        })
+    } 
+}
+let siriButton = new SiriButton([button1], keyboard);
+
+function listen_new_conversation(){
+    siriButton.once('press', async ()=>{
+        await pressAsk()
+        siriButton.once('release', TextSpeech.mic_stop)
+    });
+    keyboard.once('press', async (e) =>{
+        if(e.key == 'n'){
+            await new_conversation();
+        }
+    });
+}
+listen_new_conversation();
 
 async function pop_busy_dialog(title, cancelable = true, text = ''){
     return await swal({
@@ -66,95 +96,62 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
         },
     })
 }
+
+// function setup_end_on_release(){
+    
+// }
+async function pressAsk(){
+    await siri.start();
+    // setup_end_on_release()
+    let question = await askWithDialog('', false);
+
+    if(question){
+        responseToQuestion(question)
+    }else{
+        siri.cancel()
+    }
+
+    listen_new_conversation()
+}
+
 async function new_conversation(){
     let talker = new Talker(language);
-    let question = talker.askForName();
-    question.play();
-    pop_busy_dialog(question.text, false);
+
+    let siri_question = talker.askForName();
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
+
+    await siri.start()
+    let name = await askWithDialog(siri_question.text)
+
+    siri_question = talker.hi(name);
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
     
-    record_begin();
-    keyboard.once('press', if_siri_key_do(afterAskName));
-    button1.once('press', afterAskName);
-}
-
-keyboard.on('press', async (e) =>{
-    if(e.key == 'n' && !isBusy()){
-        await new_conversation();
-    }
-});
-async function afterAskName(e){
-    let talker = new Talker(language);
-    let name = await record_might_end();
-    let question = talker.hi(name);
-    question.play();
-    pop_busy_dialog(question.text, false);
-
-    record_begin(true);
-    keyboard.once('press', if_siri_key_do(end_record_and_response));
-    button1.once('press', end_record_and_response);
-}
-
-const microm = new Microm();
-var recordSometime = false;
-var aborted = false;
-
-async function record_begin(pop_up_dialog = false){
-    await microm.record();
-    console.log('record_begin...');
-    
-    setTimeout(()=>{
-        siri.start();
-    }, 500);
-
-    await wait(700);
-    if(aborted){
-        aborted = false;
-        return false;
-    }
-    recordSometime = true;
-    if(pop_up_dialog){
-        pop_busy_dialog('Listening...', true);
-    }
-    return true;
-}
-
-async function record_might_end(){
-    if(recordSometime){
-        recordSometime = false;
-        return await record_end();
+    await siri.start()
+    let question = await askWithDialog(siri_question.text)
+    if(question){
+        responseToQuestion(question)
     }else{
-        aborted = true;
-        return await record_abort();
+        siri.cancel()
     }
+
+    listen_new_conversation()
 }
-async function record_abort(){
-    siri.cancel();
-    return false;
-} 
-async function record_end(){
-    recordSometime = false;
-    siri.done();
-    pop_busy_dialog('Transcoding...', false);
-    console.log('record_end.');
-    await microm.stop();
-    let mp3 = await microm.getMp3();
-    
-    // swal('Transtexting...','', 'info');
-    pop_busy_dialog('Thinking...', false);
-    let text = null;
-    try{
-        text = await speech_to_text(mp3.blob, language);
-    }catch(e){
-        console.warn(e);
-        swal({title:"Error", text:"Cannot transcode.", icon:"error", button: false,});
-        return false
-    }
-    if(text !== null){
-        // console.log(text)
-        // swal('You said:', text, 'success');
-        return text;
-    }
+
+async function askWithDialog(title, autoStop=true){
+    let recording = $('<div />').attr('id', 'text-recording');
+    recording.text('...');
+
+    let dialog = swal({
+        title: title,
+        content: recording[0],
+        buttons: false
+    })
+    let result = await TextSpeech.mic_to_text(language, autoStop, recording[0]);
+    return result;
 }
+
 
 function isBusy(){
     let state = swal.getState();
@@ -173,7 +170,8 @@ keyboard.on('press', async (e) =>{
             },
         });
         if(input){
-            await text_to_speech_and_play();
+            let sentence =  new Sentence(input, language)
+            await sentence.play()
         }
     }
 });
@@ -199,24 +197,15 @@ window.isBusy = isBusy;
 
 var language = 'en-us';
 
-
-async function end_record_and_response(){
-    let question = await record_might_end();
-    console.log('question', question);
-    if(question){
-        await responseToQuestion(question)
-    }
-}
-
 async function responseToQuestion(question){
     let answer = reason_question(question);
-    answer.play()
     console.log('answer', answer);
     swal({
         title: answer.text,
         text : question,
         button: false,
     })
+    await answer.play();
 }
 
 function reason_question(question){

@@ -8,6 +8,9 @@ const { PassThrough } = require('stream');
 const app = express()
 const bodyParser = require('body-parser')
 
+const watson = require('watson-developer-cloud');
+const vcapServices = require('vcap_services');
+
 const SpeechToTextV1 = require('watson-developer-cloud/speech-to-text/v1');
 const TextToSpeechV1 = require('watson-developer-cloud/text-to-speech/v1');
 const speech_to_text = new SpeechToTextV1 ({
@@ -19,6 +22,22 @@ const text_to_speech = new TextToSpeechV1 ({
     password: IBMCredentials.text_to_speech[0].credentials.password
   });
 
+// speech to text token endpoint
+const sttAuthService = new watson.AuthorizationV1(
+    Object.assign({
+        username: IBMCredentials.speech_to_text[0].credentials.username, 
+        password: IBMCredentials.speech_to_text[0].credentials.password
+      }, vcapServices.getCredentials('speech_to_text') 
+      // pulls credentials from environment in bluemix, otherwise returns {}
+    )
+);
+const ttsAuthService = new watson.AuthorizationV1(
+    Object.assign({
+        username: IBMCredentials.text_to_speech[0].credentials.username, 
+        password: IBMCredentials.text_to_speech[0].credentials.password
+      }, vcapServices.getCredentials('text_to_speech')
+    )
+);
 
 app.post('/speech-to-text/:lang', function(req, res, next) {
 
@@ -97,6 +116,41 @@ app.post('/text-to-speech/:lang', bodyParser.json(), function(req, res, next) {
 
     // res.pipe(pass);
 });
+
+// token endpoints
+// **Warning**: these endpoints should probably be guarded with additional authentication & authorization for production use
+app.use('/token/speech-to-text', function(req, res) {
+    sttAuthService.getToken(
+        {
+        url: watson.SpeechToTextV1.URL
+        },
+        function(err, token) {
+        if (err) {
+            console.log('Error retrieving token: ', err);
+            res.status(500).send('Error retrieving token');
+            return;
+        }
+        res.send(token);
+        }
+    );
+});
+
+app.use('/token/text-to-speech', function(req, res) {
+    ttsAuthService.getToken(
+        {
+        url: watson.TextToSpeechV1.URL
+        },
+        function(err, token) {
+        if (err) {
+            console.log('Error retrieving token: ', err);
+            res.status(500).send('Error retrieving token');
+            return;
+        }
+        res.send(token);
+        }
+    );
+});
+
 
 app.use('/', express.static('static'));
 

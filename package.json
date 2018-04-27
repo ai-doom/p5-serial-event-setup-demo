@@ -29,7 +29,8 @@
     "p5": "^0.6.0",
     "serialport": "^6.2.0",
     "sweetalert": "^2.1.0",
-    "watson-developer-cloud": "^3.3.0"
+    "watson-developer-cloud": "^3.3.0",
+    "watson-speech": "^0.34.1"
   },
   "devDependencies": {
     "extract-loader": "^2.0.1",
