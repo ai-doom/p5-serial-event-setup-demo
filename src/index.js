@@ -93,7 +93,7 @@ keyboard.on('press', async (e) =>{
         console.log('j result')
         TextSpeech.mic_to_text(language)
         await wait(1000)
-        let result = await mic_stop()
+        let result = await TextSpeech.mic_stop()
         console.log(result)
     }
 });
