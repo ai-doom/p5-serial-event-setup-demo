@@ -102423,9 +102423,17 @@ let button1 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 let button2 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 let button3 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 
+let bgMusic = new howler__WEBPACK_IMPORTED_MODULE_1__["Howl"]({
+    src: ['static/UNIVOX8.WAV'],
+    loop: true,
+    volume: 0.5
+});
+
 let devices = [new _Device_js__WEBPACK_IMPORTED_MODULE_4__["TimeAnalysizer"](), piezo, bend, photo, touch, button1, button2, button3]
 const board = new _Arduino_js__WEBPACK_IMPORTED_MODULE_3__["Board"](devices);
 board.connect({baudrate: 9600});
+
+
 
 // debug raw value
 // board.on('line', line => {
@@ -102626,6 +102634,8 @@ async function ask_to_do_game(){
 
     // instrction = talker.beginChallenge()
     // await instrction.play()
+    
+    bgMusic.play();
 
     instrction = talker.liftMe()
     await instrction.play()
@@ -102713,6 +102723,8 @@ async function ask_to_do_game(){
     await instrction.play()
 
     // TODO: Sample
+    
+    bgMusic.stop();
 }
 
 async function pressAsk(){
