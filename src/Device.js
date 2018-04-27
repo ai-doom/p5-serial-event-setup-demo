@@ -26,9 +26,9 @@ class Button extends InputDevice{
          */
         if(this.lastValue !== value){
             if(value === this.offValue){
-                this.emit("release");
+                this.emit("release", this);
             }else{
-                this.emit("press");
+                this.emit("press", this);
             }
             this.lastValue = value;
         }
@@ -50,9 +50,9 @@ class ThresholdedSensor extends InputDevice{
         
         if(this.state != over){
             if(over == true){
-                this.emit("activate");
+                this.emit("press", this);
             }else{
-                this.emit("release");
+                this.emit("release", this);
             }
             this.state = over;
         }
