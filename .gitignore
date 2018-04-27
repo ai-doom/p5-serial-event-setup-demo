@@ -1,6 +1,9 @@
 # credentials
 credentials.json
 
+# js map file
+*.map
+
 # Mac
 .DS_Store
 
