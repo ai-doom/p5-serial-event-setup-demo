@@ -75,8 +75,8 @@ let siriButton = new SiriButton([button1], keyboard);
 
 function listen_new_conversation(){
     siriButton.once('press', async ()=>{
-        await pressAsk()
         siriButton.once('release', TextSpeech.mic_stop)
+        await pressAsk()
     });
     keyboard.once('press', async (e) =>{
         if(e.key == 'n'){
