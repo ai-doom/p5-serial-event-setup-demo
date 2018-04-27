@@ -256,7 +256,7 @@ export default class SentenceLibrary {
     pressButton() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`白、赤、青！`);
+                return this.sentence(`次はボータンを順次に押して！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -264,7 +264,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Now press the following buttons and do not make a mistake or hesitate. White. Red. Green.`);
+                return this.sentence(`Now press the following buttons and do not make a mistake or hesitate.`);
         }
     }
     petMe() {
