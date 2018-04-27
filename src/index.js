@@ -9,7 +9,7 @@ import {Keybaord} from './Keyboard.js'
 import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
 import Talker , {Sentence} from './Sentence.js'
-import {wait} from './utils.js'
+import {wait, wait_until} from './utils.js'
 import { EventEmitter2 } from "eventemitter2";
 
 let piezo = new ThresholdedSensor();
