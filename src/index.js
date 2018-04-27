@@ -12,10 +12,10 @@ import Talker , {Sentence} from './Sentence.js'
 import {wait, wait_until} from './utils.js'
 import { EventEmitter2 } from "eventemitter2";
 
-let piezo = new ThresholdedSensor();
-let bend  = new ThresholdedSensor();
-let photo = new ThresholdedSensor();
-let touch = new ThresholdedSensor();
+let piezo = new ThresholdedSensor(12);
+let bend  = new ThresholdedSensor(360);
+let photo = new ThresholdedSensor(118);
+let touch = new ThresholdedSensor(20000);
 let button1 = new Button(0, 0);
 let button2 = new Button(0, 0);
 let button3 = new Button(0, 0);
@@ -87,7 +87,7 @@ class SiriButton extends EventEmitter2{
         })
     } 
 }
-let siriButton = new SiriButton([button1], keyboard);
+let siriButton = new SiriButton([button2], keyboard);
 
 function listen_new_conversation(){
     siriButton.once('press', async ()=>{

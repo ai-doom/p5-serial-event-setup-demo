@@ -102415,10 +102415,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let piezo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"]();
-let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"]();
-let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"]();
-let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"]();
+let piezo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](12);
+let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](360);
+let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](118);
+let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](20000);
 let button1 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 let button2 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 let button3 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
@@ -102490,7 +102490,7 @@ class SiriButton extends eventemitter2__WEBPACK_IMPORTED_MODULE_10__["EventEmitt
         })
     } 
 }
-let siriButton = new SiriButton([button1], keyboard);
+let siriButton = new SiriButton([button2], keyboard);
 
 function listen_new_conversation(){
     siriButton.once('press', async ()=>{
