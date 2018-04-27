@@ -49,6 +49,8 @@ button3.on('press', ()=>{
 // touch.on('press', ()=>{
 //     console.log('press','touch')
 // })
+
+
 bend.on('press', ()=>{
     console.log('press','bend')
 })
@@ -142,27 +144,50 @@ keyboard.on('press', (e)=>{
     else if(e.key == 'u'){
         touch.on('tick', collect_u)
     }
+    else if(e.key == 'r'){
+        piezo.on('tick', collect_p)
+        bend.on('tick', collect_o)
+        photo.on('tick', collect_i)
+        touch.on('tick', collect_u)
+    }
 })
 keyboard.on('release', (e)=>{
     if(e.key == 'p'){
         piezo.off('tick', collect_p)
         piezo.reset(p_values, 10)
-        console.log('p set');
+        console.log('piezo set', piezo.threshold);
         
     }else if(e.key == 'o'){
         bend.off('tick', collect_o)
         bend.reset(o_values, 3)
-        console.log('o set');
+        console.log('bend set', bend.threshold);
     }
     else if(e.key == 'i'){
         photo.off('tick', collect_i)
         photo.reset(i_values, 3)
-        console.log('i set');
+        console.log('photo set', photo.threshold);
     }
     else if(e.key == 'u'){
         touch.off('tick', collect_u)
         touch.reset(u_values, 3)
-        console.log('u set');
+        console.log('touch set', touch.threshold);
+    }
+    else if(e.key == 'r'){
+        piezo.off('tick', collect_p)
+        piezo.reset(p_values, 10)
+        console.log('piezo set', piezo.threshold);
+
+        bend.off('tick', collect_o)
+        bend.reset(o_values, 3)
+        console.log('bend set', bend.threshold);
+
+        photo.off('tick', collect_i)
+        photo.reset(i_values, 3)
+        console.log('photo set', photo.threshold);
+
+        touch.off('tick', collect_u)
+        touch.reset(u_values, 3)
+        console.log('touch set', touch.threshold);
     }
 })
 
@@ -209,27 +234,13 @@ async function ask_to_do_game(){
 
     let buttons = [button1, button2, button3]
     instrction = talker.pressButton()
-    instrction.play()
-
-    // 
-    if(!await wait_until_some_device(button3, 'press', buttons)){
-        instrction = talker.failComply()
-        return await instrction.play()
-    }
-    if(!await wait_until_some_device(button2, 'press', buttons)){
-        instrction = talker.failComply()
-        return await instrction.play()
-    }
-    if(!await wait_until_some_device(button1, 'press', buttons)){
-        instrction = talker.failComply()
-        return await instrction.play()
-    }
+    await instrction.play()
 
     let color 
     let button
 
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
@@ -238,7 +249,7 @@ async function ask_to_do_game(){
     }
     
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
@@ -247,7 +258,7 @@ async function ask_to_do_game(){
     }
     
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
@@ -256,7 +267,7 @@ async function ask_to_do_game(){
     }
     
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
@@ -265,7 +276,7 @@ async function ask_to_do_game(){
     }
     
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
@@ -274,7 +285,7 @@ async function ask_to_do_game(){
     }
     
     color= possible_buttons.randomElement();
-    button = color_to_button(color)
+    button = color_to_button[color]
     instrction = talker.buttonName(color)
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
