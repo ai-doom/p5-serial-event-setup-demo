@@ -72,15 +72,25 @@ const keyboard = new Keybaord();
 class SiriButton extends EventEmitter2{
     constructor(devices, keyboard){
         super()
-        devices.map(d=>d.on('press', e=>this.emit('press', e)))
-        devices.map(d=>d.on('release', e=>this.emit('release', e)))
-
+        this.busy = false;
+        
+        devices.map(d=>d.on('press', e=>{
+            this.busy = true;
+            this.emit('press', e)
+        }))
+        devices.map(d=>d.on('release', e=>{
+            this.busy = false;
+            this.emit('release', e)
+        }))
+        
         keyboard.on('press', (e)=>{
+            this.busy = true;
             if(e.key == default_siri_key){
                 this.emit('press', e)
             }
         })
         keyboard.on('release', (e)=>{
+            this.busy = false;
             if(e.key == default_siri_key){
                 this.emit('release', e)
             }
@@ -133,18 +143,18 @@ function collect_u(value){
     u_values.push(value)
 }
 keyboard.on('press', (e)=>{
-    if(e.key == 'p'){
-        piezo.on('tick', collect_p)
-    }else if(e.key == 'o'){
-        bend.on('tick', collect_o)
-    }
-    else if(e.key == 'i'){
-        photo.on('tick', collect_i)
-    }
-    else if(e.key == 'u'){
-        touch.on('tick', collect_u)
-    }
-    else if(e.key == 'r'){
+    // if(e.key == 'p'){
+    //     piezo.on('tick', collect_p)
+    // }else if(e.key == 'o'){
+    //     bend.on('tick', collect_o)
+    // }
+    // else if(e.key == 'i'){
+    //     photo.on('tick', collect_i)
+    // }
+    // else if(e.key == 'u'){
+    //     touch.on('tick', collect_u)
+    // }
+    if(e.key == '\\'){
         piezo.on('tick', collect_p)
         bend.on('tick', collect_o)
         photo.on('tick', collect_i)
@@ -152,27 +162,27 @@ keyboard.on('press', (e)=>{
     }
 })
 keyboard.on('release', (e)=>{
-    if(e.key == 'p'){
-        piezo.off('tick', collect_p)
-        piezo.reset(p_values, 10)
-        console.log('piezo set', piezo.threshold);
+    // if(e.key == 'p'){
+    //     piezo.off('tick', collect_p)
+    //     piezo.reset(p_values, 10)
+    //     console.log('piezo set', piezo.threshold);
         
-    }else if(e.key == 'o'){
-        bend.off('tick', collect_o)
-        bend.reset(o_values, 3)
-        console.log('bend set', bend.threshold);
-    }
-    else if(e.key == 'i'){
-        photo.off('tick', collect_i)
-        photo.reset(i_values, 3)
-        console.log('photo set', photo.threshold);
-    }
-    else if(e.key == 'u'){
-        touch.off('tick', collect_u)
-        touch.reset(u_values, 3)
-        console.log('touch set', touch.threshold);
-    }
-    else if(e.key == 'r'){
+    // }else if(e.key == 'o'){
+    //     bend.off('tick', collect_o)
+    //     bend.reset(o_values, 3)
+    //     console.log('bend set', bend.threshold);
+    // }
+    // else if(e.key == 'i'){
+    //     photo.off('tick', collect_i)
+    //     photo.reset(i_values, 3)
+    //     console.log('photo set', photo.threshold);
+    // }
+    // else if(e.key == 'u'){
+    //     touch.off('tick', collect_u)
+    //     touch.reset(u_values, 3)
+    //     console.log('touch set', touch.threshold);
+    // }
+    if(e.key == '\\'){
         piezo.off('tick', collect_p)
         piezo.reset(p_values, 10)
         console.log('piezo set', piezo.threshold);
