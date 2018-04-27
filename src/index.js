@@ -87,6 +87,13 @@ async function askWithDialog(privousDialog){
 
     
 }
+keyboard.on('press', async (e) =>{
+    if(e.key == 'j' && !isBusy()){
+        // await new_conversation();
+        let result = await TextSpeech.mic_to_text(language)
+        console.log(result)
+    }
+});
 
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
