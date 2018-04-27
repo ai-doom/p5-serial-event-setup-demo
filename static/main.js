@@ -102222,9 +102222,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Siri_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Siri.js */ "./src/Siri.js");
 /* harmony import */ var _Sentence_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Sentence.js */ "./src/Sentence.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+/* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! eventemitter2 */ "./node_modules/eventemitter2/lib/eventemitter2.js");
+/* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(eventemitter2__WEBPACK_IMPORTED_MODULE_10__);
 
 
 // import Microm from 'microm'
+
 
 
 
@@ -102256,12 +102259,8 @@ board.connect({baudrate: 9600});
 // board.on('point', point => {
 //     console.log(`point`, point)
 // });
-button1.on('press', ()=>{
-    if(!isBusy()){
-        record_begin(true);
-        button1.once('release', end_record_and_response);
-    }
-})
+
+
 button2.on('press', ()=>{
     console.log('press','button2')
 })
@@ -102274,15 +102273,44 @@ _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["getAuthorizations"]()
 
 const siri = new _Siri_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
 
-const siriKey = ' ';
-const if_siri_key_not_busy_do =  (async_callable) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
-const if_siri_key_do =  (async_callable) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
+const default_siri_key = ' ';
+const if_siri_key_not_busy_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
+const if_siri_key_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
 
 const keyboard = new _Keyboard_js__WEBPACK_IMPORTED_MODULE_5__["Keybaord"]();
-keyboard.on('press', if_siri_key_not_busy_do(  () =>{
-    record_begin(true);
-    keyboard.once('release', if_siri_key_do(end_record_and_response));
-}));
+
+class SiriButton extends eventemitter2__WEBPACK_IMPORTED_MODULE_10__["EventEmitter2"]{
+    constructor(devices, keyboard){
+        super()
+        devices.map(d=>d.on('press', e=>this.emit('press', e)))
+        devices.map(d=>d.on('release', e=>this.emit('release', e)))
+
+        keyboard.on('press', (e)=>{
+            if(e.key == default_siri_key){
+                this.emit('press', e)
+            }
+        })
+        keyboard.on('release', (e)=>{
+            if(e.key == default_siri_key){
+                this.emit('release', e)
+            }
+        })
+    } 
+}
+let siriButton = new SiriButton([button1], keyboard);
+
+function listen_new_conversation(){
+    siriButton.once('press', async ()=>{
+        await pressAsk()
+        siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
+    });
+    keyboard.once('press', async (e) =>{
+        if(e.key == 'n'){
+            await new_conversation();
+        }
+    });
+}
+listen_new_conversation();
 
 async function pop_busy_dialog(title, cancelable = true, text = ''){
     return await sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
@@ -102294,6 +102322,24 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
         },
     })
 }
+
+// function setup_end_on_release(){
+    
+// }
+async function pressAsk(){
+    await siri.start();
+    // setup_end_on_release()
+    let question = await askWithDialog('', false);
+
+    if(question){
+        responseToQuestion(question)
+    }else{
+        siri.cancel()
+    }
+
+    listen_new_conversation()
+}
+
 async function new_conversation(){
     let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
 
@@ -102310,8 +102356,13 @@ async function new_conversation(){
     
     await siri.start()
     let question = await askWithDialog(siri_question.text)
+    if(question){
+        responseToQuestion(question)
+    }else{
+        siri.cancel()
+    }
 
-    responseToQuestion(question)
+    listen_new_conversation()
 }
 
 async function askWithDialog(title, autoStop=true){
@@ -102327,11 +102378,6 @@ async function askWithDialog(title, autoStop=true){
     return result;
 }
 
-keyboard.on('press', async (e) =>{
-    if(e.key == 'n' && !isBusy()){
-        await new_conversation();
-    }
-});
 
 function isBusy(){
     let state = sweetalert__WEBPACK_IMPORTED_MODULE_2___default.a.getState();
@@ -102350,7 +102396,8 @@ keyboard.on('press', async (e) =>{
             },
         });
         if(input){
-            await text_to_speech_and_play();
+            let sentence =  new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["Sentence"](input, language)
+            await sentence.play()
         }
     }
 });
