@@ -102384,10 +102384,11 @@ async function ask_to_do_game(){
 
 async function pressAsk(){
     await siri.start();
-    // setup_end_on_release()
+
     let question = await askWithDialog('', false);
 
     if(question){
+        siri.done()
         responseToQuestion(question)
     }else{
         siri.cancel()
@@ -102397,6 +102398,7 @@ async function instantAsk(previosQuestions){
     await siri.start()
     let question = await askWithDialog(previosQuestions)
     if(question){
+        siri.done()
         responseToQuestion(question)
     }else{
         siri.cancel()
@@ -102410,8 +102412,7 @@ async function new_conversation(){
     pop_busy_dialog(siri_question.text, false);
     await siri_question.play();
 
-    await siri.start()
-    let name = await askWithDialog(siri_question.text)
+    await ask_with_dialog_and_indicator_sound(siri_question.text)
 
     siri_question = talker.hi(name);
     pop_busy_dialog(siri_question.text, false);
@@ -102420,6 +102421,12 @@ async function new_conversation(){
     await instantAsk(siri_question.text)
 }
 
+async function ask_with_dialog_and_indicator_sound(title, autoStop=true){
+    await siri.start()
+    let name = await askWithDialog(title, autoStop=true)
+    siri.done()
+    return result;
+}
 async function askWithDialog(title, autoStop=true){
     let recording = jquery__WEBPACK_IMPORTED_MODULE_0___default()('<div />').attr('id', 'text-recording');
     recording.text('...');
