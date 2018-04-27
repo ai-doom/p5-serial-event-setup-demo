@@ -101684,9 +101684,9 @@ class Button extends InputDevice{
          */
         if(this.lastValue !== value){
             if(value === this.offValue){
-                this.emit("release");
+                this.emit("release", this);
             }else{
-                this.emit("press");
+                this.emit("press", this);
             }
             this.lastValue = value;
         }
@@ -101702,14 +101702,14 @@ class ThresholdedSensor extends InputDevice{
         this.state = false;
     }
     tick(value){
-        
+        this.emit("tick", value);
         let over  = value > this.threshold;
         
         if(this.state != over){
             if(over == true){
-                this.emit("activate");
+                this.emit("press", this);
             }else{
-                this.emit("release");
+                this.emit("release", this);
             }
             this.state = over;
         }
@@ -101895,7 +101895,22 @@ class SentenceLibrary{
             default:
                 return this.sentence(`Hi, ${name}, What can I do for you?`);
         }
-    } 
+    }
+    greetings(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`こんにちは〜`);
+    
+            case 'es-es':
+                return this.sentence (`Hola!`);
+                
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Hi!`);
+        }
+    }
     makeAngry(){
         switch (this.lang) {
             case 'ja-jp':
@@ -101924,7 +101939,7 @@ class SentenceLibrary{
                 return this.sentence(`You must kill Jeff`);
         }
     }
-      danceDance(){
+    danceDance(){
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`私のために踊る`);
@@ -102165,6 +102180,7 @@ async function mic_to_text(lang, autoStop = true, outputElement = undefined){
         token: token_speech_to_text,
         keepMicrophone: true,
         outputElement: outputElement,
+        model: language_model,
         objectMode: true
     });
 
@@ -102262,7 +102278,7 @@ board.connect({baudrate: 9600});
 
 
 button2.on('press', ()=>{
-    console.log('press','button2')
+    
 })
 button3.on('press', ()=>{
     console.log('press','button3')
@@ -102303,10 +102319,12 @@ function listen_new_conversation(){
     siriButton.once('press', async ()=>{
         siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
         await pressAsk()
+        listen_new_conversation()
     });
     keyboard.once('press', async (e) =>{
         if(e.key == 'n'){
             await new_conversation();
+            listen_new_conversation()
         }
     });
 }
@@ -102323,9 +102341,48 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 
-// function setup_end_on_release(){
-    
-// }
+// TODO: Sample: setting threshold for device
+var p_values = [];
+function collect_p(value){
+    p_values.push(value)
+}
+keyboard.on('press', (e)=>{
+    if(e.key == 'p'){
+        piezo.on('tick', collect_p)
+    }else if(e.key == 'o'){
+
+    }
+})
+keyboard.on('release', (e)=>{
+    if(e.key == 'p'){
+        piezo.off('tick', collect_p)
+        piezo.reset(p_values)
+    }else if(e.key == 'o'){
+        
+    }
+})
+
+const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
+    return await Promise.race(all_devices.map(device => Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_until"])(device, event))) == correctDevice
+}
+// TODO: Sample:
+async function ask_to_do_game(){
+    let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
+
+    let instrction 
+    instrction = talker.killJeff()
+    await instrction.play()
+    // 
+    await wait_until_some_device(button2, 'press')
+
+    instrction = talker.riddleMe()
+    await instrction.play()
+
+    await wait_until_some_device(button3, 'press')
+
+    // TODO: Sample
+}
+
 async function pressAsk(){
     await siri.start();
     // setup_end_on_release()
@@ -102336,8 +102393,15 @@ async function pressAsk(){
     }else{
         siri.cancel()
     }
-
-    listen_new_conversation()
+}
+async function instantAsk(previosQuestions){
+    await siri.start()
+    let question = await askWithDialog(previosQuestions)
+    if(question){
+        responseToQuestion(question)
+    }else{
+        siri.cancel()
+    }
 }
 
 async function new_conversation(){
@@ -102354,15 +102418,7 @@ async function new_conversation(){
     pop_busy_dialog(siri_question.text, false);
     await siri_question.play();
     
-    await siri.start()
-    let question = await askWithDialog(siri_question.text)
-    if(question){
-        responseToQuestion(question)
-    }else{
-        siri.cancel()
-    }
-
-    listen_new_conversation()
+    await instantAsk(siri_question.text)
 }
 
 async function askWithDialog(title, autoStop=true){
@@ -102424,17 +102480,19 @@ window.isBusy = isBusy;
 var language = 'en-us';
 
 async function responseToQuestion(question){
-    let answer = reason_question(question);
+    let answer = await reason_question(question);
     console.log('answer', answer);
-    sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-        title: answer.text,
-        text : question,
-        button: false,
-    })
-    await answer.play();
+    if(answer){
+        sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+            title: answer.text,
+            text : question,
+            button: false,
+        })
+        await answer.play();
+    }
 }
 
-function reason_question(question){
+async function reason_question(question){
     let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
     switch (language) {
         case 'ja-jp':
@@ -102452,7 +102510,11 @@ function reason_question(question){
                 }else{
                     return talker.unsure();
                 }
+
                 return talker.okey(`${new_langauge_literal} に換えました。`);
+
+            }else if(question.match(/こんにちは/i)){
+                return talker.greetings()
             }else{
                 return talker.unsure();
             }
@@ -102476,7 +102538,7 @@ function reason_question(question){
         case 'en-us':
         case 'en-gb':
         default:
-            // TODO: main logic part
+            // TODO: Sample: main logic part
             if(question.match(/language/i)){
                 let new_langauge_literal = '';
                 if(question.match(/british|uk/i)){
@@ -102494,7 +102556,15 @@ function reason_question(question){
                 }else{
                     return talker.unsure();
                 }
+
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
+
+            }else if(question.match(/game/i)){
+                await ask_to_do_game()
+                return talker.goCrazy()
+
+            }else if(question.match(/hi|hello|how are you/i)){
+                return talker.greetings()
             }else{
                 return talker.unsure();
             }
