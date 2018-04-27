@@ -20,9 +20,17 @@ let button1 = new Button(0, 0);
 let button2 = new Button(0, 0);
 let button3 = new Button(0, 0);
 
+let bgMusic = new Howl({
+    src: ['static/UNIVOX8.WAV'],
+    loop: true,
+    volume: 0.5
+});
+
 let devices = [new TimeAnalysizer(), piezo, bend, photo, touch, button1, button2, button3]
 const board = new Board(devices);
 board.connect({baudrate: 9600});
+
+
 
 // debug raw value
 // board.on('line', line => {
@@ -213,6 +221,8 @@ async function ask_to_do_game(){
 
     // instrction = talker.beginChallenge()
     // await instrction.play()
+    
+    bgMusic.play();
 
     instrction = talker.liftMe()
     await instrction.play()
@@ -300,6 +310,8 @@ async function ask_to_do_game(){
     await instrction.play()
 
     // TODO: Sample
+    
+    bgMusic.stop();
 }
 
 async function pressAsk(){
