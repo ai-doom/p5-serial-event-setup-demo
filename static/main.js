@@ -102454,9 +102454,9 @@ button2.on('press', ()=>{
 button3.on('press', ()=>{
     console.log('press','button3')
 })
-// piezo.on('press', ()=>{
-//     console.log('press','piezo')
-// })
+piezo.on('press', ()=>{
+    console.log('press','piezo')
+})
 // touch.on('press', ()=>{
 //     console.log('press','touch')
 // })
@@ -102633,17 +102633,21 @@ async function ask_to_do_game(){
     let devices = [button1, button2, button3, photo, bend]
 
     instrction = talker.beginChallenge()
+    pop_busy_dialog(instrction.text, false)
     await instrction.play()
     
     bgMusic.play();
 
     instrction = talker.liftMe()
+    pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
     // 
     if(!await wait_until_some_device(photo, 'press', devices)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
 
     instrction = talker.squeezeMe()
@@ -102652,7 +102656,9 @@ async function ask_to_do_game(){
     // 
     if(!await wait_until_some_device(bend, 'press', devices)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
 
     let buttons = [button1, button2, button3]
@@ -102668,7 +102674,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
     color= possible_buttons.randomElement();
@@ -102677,7 +102685,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
     color= possible_buttons.randomElement();
@@ -102686,7 +102696,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
     color= possible_buttons.randomElement();
@@ -102695,7 +102707,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
     color= possible_buttons.randomElement();
@@ -102704,7 +102718,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
     color= possible_buttons.randomElement();
@@ -102713,7 +102729,9 @@ async function ask_to_do_game(){
     instrction.play()
     if(!await wait_until_some_device(button, 'press', buttons)){
         instrction = talker.failComply()
-        return await instrction.play()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        return bgMusic.stop();
     }
     
 
