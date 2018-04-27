@@ -2,7 +2,7 @@ import p5 from 'p5'
 import './libraries/p5.serialport.js'
 import EventEmitter2 from "eventemitter2"
 
-import './Device.js'
+import {InputDevice} from './Device.js'
 
 export 
 class Board extends EventEmitter2{
