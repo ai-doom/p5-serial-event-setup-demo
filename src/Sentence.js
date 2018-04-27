@@ -92,7 +92,22 @@ class SentenceLibrary{
             default:
                 return this.sentence(`Hi, ${name}, What can I do for you?`);
         }
-    } 
+    }
+    greetings(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`こんにちは〜`);
+    
+            case 'es-es':
+                return this.sentence (`Hola!`);
+                
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Hi!`);
+        }
+    }
     makeAngry(){
         switch (this.lang) {
             case 'ja-jp':
@@ -121,7 +136,7 @@ class SentenceLibrary{
                 return this.sentence(`You must kill Jeff`);
         }
     }
-      danceDance(){
+    danceDance(){
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`私のために踊る`);

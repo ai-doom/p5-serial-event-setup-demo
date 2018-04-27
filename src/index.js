@@ -36,7 +36,7 @@ board.connect({baudrate: 9600});
 
 
 button2.on('press', ()=>{
-    console.log('press','button2')
+    
 })
 button3.on('press', ()=>{
     console.log('press','button3')
@@ -77,10 +77,12 @@ function listen_new_conversation(){
     siriButton.once('press', async ()=>{
         siriButton.once('release', TextSpeech.mic_stop)
         await pressAsk()
+        listen_new_conversation()
     });
     keyboard.once('press', async (e) =>{
         if(e.key == 'n'){
             await new_conversation();
+            listen_new_conversation()
         }
     });
 }
@@ -97,9 +99,48 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 
-// function setup_end_on_release(){
-    
-// }
+// TODO: Sample: setting threshold for device
+var p_values = [];
+function collect_p(value){
+    p_values.push(value)
+}
+keyboard.on('press', (e)=>{
+    if(e.key == 'p'){
+        piezo.on('tick', collect_p)
+    }else if(e.key == 'o'){
+
+    }
+})
+keyboard.on('release', (e)=>{
+    if(e.key == 'p'){
+        piezo.off('tick', collect_p)
+        piezo.reset(p_values)
+    }else if(e.key == 'o'){
+        
+    }
+})
+
+const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
+    return await Promise.race(all_devices.map(device => wait_until(device, event))) == correctDevice
+}
+// TODO: Sample:
+async function ask_to_do_game(){
+    let talker = new Talker(language);
+
+    let instrction 
+    instrction = talker.killJeff()
+    await instrction.play()
+    // 
+    await wait_until_some_device(button2, 'press')
+
+    instrction = talker.riddleMe()
+    await instrction.play()
+
+    await wait_until_some_device(button3, 'press')
+
+    // TODO: Sample
+}
+
 async function pressAsk(){
     await siri.start();
     // setup_end_on_release()
@@ -110,8 +151,15 @@ async function pressAsk(){
     }else{
         siri.cancel()
     }
-
-    listen_new_conversation()
+}
+async function instantAsk(previosQuestions){
+    await siri.start()
+    let question = await askWithDialog(previosQuestions)
+    if(question){
+        responseToQuestion(question)
+    }else{
+        siri.cancel()
+    }
 }
 
 async function new_conversation(){
@@ -128,15 +176,7 @@ async function new_conversation(){
     pop_busy_dialog(siri_question.text, false);
     await siri_question.play();
     
-    await siri.start()
-    let question = await askWithDialog(siri_question.text)
-    if(question){
-        responseToQuestion(question)
-    }else{
-        siri.cancel()
-    }
-
-    listen_new_conversation()
+    await instantAsk(siri_question.text)
 }
 
 async function askWithDialog(title, autoStop=true){
@@ -198,17 +238,19 @@ window.isBusy = isBusy;
 var language = 'en-us';
 
 async function responseToQuestion(question){
-    let answer = reason_question(question);
+    let answer = await reason_question(question);
     console.log('answer', answer);
-    swal({
-        title: answer.text,
-        text : question,
-        button: false,
-    })
-    await answer.play();
+    if(answer){
+        swal({
+            title: answer.text,
+            text : question,
+            button: false,
+        })
+        await answer.play();
+    }
 }
 
-function reason_question(question){
+async function reason_question(question){
     let talker = new Talker(language);
     switch (language) {
         case 'ja-jp':
@@ -226,7 +268,11 @@ function reason_question(question){
                 }else{
                     return talker.unsure();
                 }
+
                 return talker.okey(`${new_langauge_literal} に換えました。`);
+
+            }else if(question.match(/こんにちは/i)){
+                return talker.greetings()
             }else{
                 return talker.unsure();
             }
@@ -250,7 +296,7 @@ function reason_question(question){
         case 'en-us':
         case 'en-gb':
         default:
-            // TODO: main logic part
+            // TODO: Sample: main logic part
             if(question.match(/language/i)){
                 let new_langauge_literal = '';
                 if(question.match(/british|uk/i)){
@@ -268,7 +314,15 @@ function reason_question(question){
                 }else{
                     return talker.unsure();
                 }
+
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
+
+            }else if(question.match(/game/i)){
+                await ask_to_do_game()
+                return talker.goCrazy()
+
+            }else if(question.match(/hi|hello|how are you/i)){
+                return talker.greetings()
             }else{
                 return talker.unsure();
             }
