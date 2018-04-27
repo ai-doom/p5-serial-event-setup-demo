@@ -34,12 +34,26 @@ board.connect({baudrate: 9600});
 //     console.log(`point`, point)
 // });
 
-
+button1.on('press', ()=>{
+    console.log('press','button1')
+})
 button2.on('press', ()=>{
-    
+    console.log('press','button2')
 })
 button3.on('press', ()=>{
     console.log('press','button3')
+})
+// piezo.on('press', ()=>{
+//     console.log('press','piezo')
+// })
+// touch.on('press', ()=>{
+//     console.log('press','touch')
+// })
+bend.on('press', ()=>{
+    console.log('press','bend')
+})
+photo.on('press', ()=>{
+    console.log('press','photo')
 })
 
 
@@ -101,45 +115,178 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
 
 // TODO: Sample: setting threshold for device
 var p_values = [];
+var o_values = [];
+var i_values = [];
+var u_values = [];
 function collect_p(value){
     p_values.push(value)
+}
+function collect_o(value){
+    o_values.push(value)
+}
+function collect_i(value){
+    i_values.push(value)
+}
+function collect_u(value){
+    u_values.push(value)
 }
 keyboard.on('press', (e)=>{
     if(e.key == 'p'){
         piezo.on('tick', collect_p)
     }else if(e.key == 'o'){
-
+        bend.on('tick', collect_o)
+    }
+    else if(e.key == 'i'){
+        photo.on('tick', collect_i)
+    }
+    else if(e.key == 'u'){
+        touch.on('tick', collect_u)
     }
 })
 keyboard.on('release', (e)=>{
     if(e.key == 'p'){
         piezo.off('tick', collect_p)
-        piezo.reset(p_values)
-    }else if(e.key == 'o'){
+        piezo.reset(p_values, 10)
+        console.log('p set');
         
+    }else if(e.key == 'o'){
+        bend.off('tick', collect_o)
+        bend.reset(o_values, 3)
+        console.log('o set');
+    }
+    else if(e.key == 'i'){
+        photo.off('tick', collect_i)
+        photo.reset(i_values, 3)
+        console.log('i set');
+    }
+    else if(e.key == 'u'){
+        touch.off('tick', collect_u)
+        touch.reset(u_values, 3)
+        console.log('u set');
     }
 })
 
 const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
+    // TODO: cancel not doing
     return await Promise.race(all_devices.map(device => wait_until(device, event))) == correctDevice
 }
+
+var color_to_button = {
+    'white': button3,
+    'red': button2,
+    'blue': button1,
+}
+var possible_buttons = ['white', 'red', 'blue']
+
 // TODO: Sample:
 async function ask_to_do_game(){
     let talker = new Talker(language);
 
     let instrction 
-    instrction = talker.killJeff()
+
+    let devices = [button1, button2, button3, photo, bend]
+
+    // instrction = talker.beginChallenge()
+    // await instrction.play()
+
+    instrction = talker.liftMe()
     await instrction.play()
+
     // 
-    if(!await wait_until_some_device(button2, 'press')){
-        instrction = talker.goCrazy()
+    if(!await wait_until_some_device(photo, 'press', devices)){
+        instrction = talker.failComply()
         return await instrction.play()
     }
 
-    instrction = talker.riddleMe()
+    instrction = talker.squeezeMe()
     await instrction.play()
 
-    await wait_until_some_device(button3, 'press')
+    // 
+    if(!await wait_until_some_device(bend, 'press', devices)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+
+    let buttons = [button1, button2, button3]
+    instrction = talker.pressButton()
+    instrction.play()
+
+    // 
+    if(!await wait_until_some_device(button3, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    if(!await wait_until_some_device(button2, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    if(!await wait_until_some_device(button1, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+
+    let color 
+    let button
+
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+    color= possible_buttons.randomElement();
+    button = color_to_button(color)
+    instrction = talker.buttonName(color)
+    instrction.play()
+    if(!await wait_until_some_device(button, 'press', buttons)){
+        instrction = talker.failComply()
+        return await instrction.play()
+    }
+    
+
+
+
+    instrction = talker.successComply()
+    await instrction.play()
 
     // TODO: Sample
 }
@@ -329,7 +476,7 @@ async function reason_question(question){
 
             }else if(question.match(/game/i)){
                 await ask_to_do_game()
-                return talker.goCrazy()
+                return ''
 
             }else if(question.match(/hi|hello|how are you/i)){
                 return talker.greetings()

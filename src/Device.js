@@ -1,4 +1,5 @@
 import EventEmitter2 from "eventemitter2"
+import {mean, variance} from 'simple-statistics'
 
 export
 class InputDevice extends EventEmitter2{

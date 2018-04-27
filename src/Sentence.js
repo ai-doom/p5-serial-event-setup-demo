@@ -195,7 +195,7 @@ export default class SentenceLibrary {
     beginChallenge() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`ゲム、スタート！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -203,13 +203,18 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules. If not, I will find a way to kill you. Do not test me. You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                return this.sentence(`
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
+                    If you want to keep your life, you must comply with the following rules. 
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.
+                `);
         }
     }
     squeezeMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`押して！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -217,13 +222,13 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`First, give me a squeeze`);
+                return this.sentence(`Squeeze　me!` );
         }
     }
     tapMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`ただて！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -231,13 +236,13 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Now, tap me. I need a top massage`);
+                return this.sentence(`Tap me!`);
         }
     }
     liftMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`つかって！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -245,13 +250,13 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Quickly! Lift me for 5 seconds and then put me back down.`);
+                return this.sentence(`Lift me!`);
         }
     }
     pressButton() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`白、赤、青！`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -276,10 +281,37 @@ export default class SentenceLibrary {
                 return this.sentence(`Pet me! I love to be pet!`);
         }
     }
+    buttonName(color){
+        switch (this.lang) {
+            case 'ja-jp':
+                switch (color) {
+                    case 'green':
+                        return this.sentence(`青!`);
+                        break;
+                    case 'red':
+                        return this.sentence(`赤!`);
+                        break;
+
+                    case 'white':
+                        return this.sentence(`白!`);
+                        break;
+                    default:
+                        break;
+                }
+
+            case 'es-es':
+                return this.sentence(color, 'en-us');
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(color);
+        }
+    }
     failComply() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`負けたよ〜`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -287,13 +319,15 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have one more chance to do this before I kill you.`);
+                //You have one more chance to do this before I destroy you.
+                return this.sentence(`Boo boo, you failed!`);
         }
     }
+
     successComply() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(``);
+                return this.sentence(`勝たね〜`);
 
             case 'es-es':
                 return this.sentence(``);

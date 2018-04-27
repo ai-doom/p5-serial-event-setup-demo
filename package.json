@@ -28,6 +28,7 @@
     "microm": "^0.2.4",
     "p5": "^0.6.0",
     "serialport": "^6.2.0",
+    "simple-statistics": "^5.4.0",
     "sweetalert": "^2.1.0",
     "watson-developer-cloud": "^3.3.0",
     "watson-speech": "^0.34.1"

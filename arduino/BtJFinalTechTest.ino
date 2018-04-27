@@ -69,5 +69,4 @@ Serial.print(button3Value);
 Serial.print("\n");
 
   //delay to keep the arduino sane
-  delay(100);
 }
