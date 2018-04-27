@@ -107,6 +107,7 @@ async function mic_to_text(lang, autoStop = true, outputElement = undefined){
         token: token_speech_to_text,
         keepMicrophone: true,
         outputElement: outputElement,
+        model: language_model,
         objectMode: true
     });
 
