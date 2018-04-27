@@ -131,7 +131,10 @@ async function ask_to_do_game(){
     instrction = talker.killJeff()
     await instrction.play()
     // 
-    await wait_until_some_device(button2, 'press')
+    if(!await wait_until_some_device(button2, 'press')){
+        instrction = talker.goCrazy()
+        return await instrction.play()
+    }
 
     instrction = talker.riddleMe()
     await instrction.play()
