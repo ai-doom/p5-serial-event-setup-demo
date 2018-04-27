@@ -102140,10 +102140,13 @@ async function getAuthorizations(){
 }
 
 function conclude_results(results){
+    results = results.filter(data=>data.results[0] && data.results[0].final)
+    
+    results = results.map(data => data.results[0].alternatives[0]);
 
-    results.map(r => console.log(r.alternatives[0]));
+    console.log(results)
 
-    return results.map(r=> r.alternatives[0].transcript).join(', ');
+    return results.map(r=> r.transcript).join(' ');
 }
 
 var stream;
@@ -102187,13 +102190,12 @@ async function mic_to_text(lang, autoStop = true, outputElement = undefined){
     stream.on('data', (data) => {
         if(autoStop && data.results[0] && data.results[0].final) {
             stream.stop();
-            stream.emit('done', data.results);
         }
     });
 
-    let  results = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_3__["wait_on"])(stream, 'done')
-
-    return conclude_results(results);
+    let results =  await stream.promise()
+    
+    return conclude_results(results)
 }
 
 /**
@@ -102203,14 +102205,11 @@ async function mic_to_text(lang, autoStop = true, outputElement = undefined){
  * @returns text recorded
  */
 async function mic_stop(){
-    stream.on('data', (data) => {
-        stream.stop();
-        stream.emit('done', data.results);
-    });
+    stream.stop();
 
-    let  results = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_3__["wait_on"])(stream, 'done')
+    let results =  await stream.promise()
 
-    return conclude_results(results);
+    return conclude_results(results)
 }
 
 
