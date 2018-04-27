@@ -73,18 +73,25 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
 async function new_conversation(){
     let talker = new Talker(language);
     let question = talker.askForName();
-    question.play();
     pop_busy_dialog(question.text, false);
-    
+    await question.play();
+    askWithDialog()
+
     record_begin();
     keyboard.once('press', if_siri_key_do(afterAskName));
     button1.once('press', afterAskName);
+}
+async function askWithDialog(privousDialog){
+    let dialog = swal()
+    let result = await TextSpeech.mic_to_text(language)
+
+    
 }
 
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
         // await new_conversation();
-        let result = await TextSpeech.mic_to_text()
+        
         console.log(result)
     }
 });
