@@ -1,4 +1,5 @@
 import {Howl, Howler} from 'howler'
+import {wait} from './utils.js'
 
 export default
 class Siri {
@@ -18,13 +19,16 @@ class Siri {
         }
         this.siri.play(spriteName);
     }
-    start(){
+    async start(){
         this.play('start');
+        await wait(200)
     }
-    done(){
+    async done(){
         this.play('done')
+        await wait(200)
     }
-    cancel(){
+    async cancel(){
         this.play('cancel')
+        await wait(200)
     }
 }

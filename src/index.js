@@ -1,6 +1,6 @@
 import $ from "jquery"
 import {Howl, Howler} from 'howler'
-import Microm from 'microm'
+// import Microm from 'microm'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
@@ -72,102 +72,42 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
 }
 async function new_conversation(){
     let talker = new Talker(language);
-    let question = talker.askForName();
-    pop_busy_dialog(question.text, false);
-    await question.play();
-    askWithDialog()
 
-    record_begin();
-    keyboard.once('press', if_siri_key_do(afterAskName));
-    button1.once('press', afterAskName);
-}
-async function askWithDialog(privousDialog){
-    let dialog = swal()
-    let result = await TextSpeech.mic_to_text(language)
+    let siri_question = talker.askForName();
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
 
+    await siri.start()
+    let name = await askWithDialog(siri_question.text)
+
+    siri_question = talker.hi(name);
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
     
+    await siri.start()
+    let question = await askWithDialog(siri_question.text)
+
+    responseToQuestion(question)
+}
+
+async function askWithDialog(title, autoStop=true){
+    let recording = $('<div />').attr('id', 'text-recording');
+    recording.text('...');
+
+    let dialog = swal({
+        title: title,
+        content: recording[0],
+        buttons: false
+    })
+    let result = await TextSpeech.mic_to_text(language, autoStop, recording[0]);
+    return result;
 }
 
 keyboard.on('press', async (e) =>{
     if(e.key == 'n' && !isBusy()){
-        // await new_conversation();
-        
-        console.log(result)
+        await new_conversation();
     }
 });
-async function afterAskName(e){
-    let talker = new Talker(language);
-    let name = await record_might_end();
-    let question = talker.hi(name);
-    question.play();
-    pop_busy_dialog(question.text, false);
-
-    record_begin(true);
-    keyboard.once('press', if_siri_key_do(end_record_and_response));
-    button1.once('press', end_record_and_response);
-}
-
-const microm = new Microm();
-var recordSometime = false;
-var aborted = false;
-
-async function record_begin(pop_up_dialog = false){
-    await microm.record();
-    console.log('record_begin...');
-    
-    setTimeout(()=>{
-        siri.start();
-    }, 500);
-
-    await wait(700);
-    if(aborted){
-        aborted = false;
-        return false;
-    }
-    recordSometime = true;
-    if(pop_up_dialog){
-        pop_busy_dialog('Listening...', true);
-    }
-    return true;
-}
-
-async function record_might_end(){
-    if(recordSometime){
-        recordSometime = false;
-        return await record_end();
-    }else{
-        aborted = true;
-        return await record_abort();
-    }
-}
-async function record_abort(){
-    siri.cancel();
-    return false;
-} 
-async function record_end(){
-    recordSometime = false;
-    siri.done();
-    pop_busy_dialog('Transcoding...', false);
-    console.log('record_end.');
-    await microm.stop();
-    let mp3 = await microm.getMp3();
-    
-    // swal('Transtexting...','', 'info');
-    pop_busy_dialog('Thinking...', false);
-    let text = null;
-    try{
-        text = await speech_to_text(mp3.blob, language);
-    }catch(e){
-        console.warn(e);
-        swal({title:"Error", text:"Cannot transcode.", icon:"error", button: false,});
-        return false
-    }
-    if(text !== null){
-        // console.log(text)
-        // swal('You said:', text, 'success');
-        return text;
-    }
-}
 
 function isBusy(){
     let state = swal.getState();
@@ -212,24 +152,15 @@ window.isBusy = isBusy;
 
 var language = 'en-us';
 
-
-async function end_record_and_response(){
-    let question = await record_might_end();
-    console.log('question', question);
-    if(question){
-        await responseToQuestion(question)
-    }
-}
-
 async function responseToQuestion(question){
     let answer = reason_question(question);
-    answer.play()
     console.log('answer', answer);
     swal({
         title: answer.text,
         text : question,
         button: false,
     })
+    await answer.play();
 }
 
 function reason_question(question){
