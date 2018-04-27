@@ -21,7 +21,7 @@ let button2 = new Button(0, 0);
 let button3 = new Button(0, 0);
 
 let bgMusic = new Howl({
-    src: ['static/UNIVOX8.WAV'],
+    src: ['UNIVOX8.WAV'],
     loop: true,
     volume: 0.5
 });
@@ -92,14 +92,14 @@ class SiriButton extends EventEmitter2{
         }))
         
         keyboard.on('press', (e)=>{
-            this.busy = true;
             if(e.key == default_siri_key){
+                this.busy = true;
                 this.emit('press', e)
             }
         })
         keyboard.on('release', (e)=>{
-            this.busy = false;
             if(e.key == default_siri_key){
+                this.busy = false;
                 this.emit('release', e)
             }
         })
@@ -229,8 +229,8 @@ async function ask_to_do_game(){
 
     let devices = [button1, button2, button3, photo, bend]
 
-    // instrction = talker.beginChallenge()
-    // await instrction.play()
+    instrction = talker.beginChallenge()
+    await instrction.play()
     
     bgMusic.play();
 
@@ -331,7 +331,7 @@ async function pressAsk(){
 
     if(question){
         siri.done()
-        responseToQuestion(question)
+        await responseToQuestion(question)
     }else{
         siri.cancel()
     }
@@ -341,7 +341,7 @@ async function instantAsk(previosQuestions){
     let question = await askWithDialog(previosQuestions)
     if(question){
         siri.done()
-        responseToQuestion(question)
+        await responseToQuestion(question)
     }else{
         siri.cancel()
     }
@@ -461,6 +461,9 @@ async function reason_question(question){
 
                 return talker.okey(`${new_langauge_literal} に換えました。`);
 
+            }else if(question.match(/ゲム|ゲーム/i)){
+                await ask_to_do_game()
+                return ''
             }else if(question.match(/こんにちは/i)){
                 return talker.greetings()
             }else{
@@ -480,6 +483,9 @@ async function reason_question(question){
                     return talker.unsure();
                 }
                 return talker.okey(`ha cambiado a ${new_langauge_literal}.`);
+            }else if(question.match(/juego/i)){
+                await ask_to_do_game()
+                return ''
             }
             return talker.unsure();
 
