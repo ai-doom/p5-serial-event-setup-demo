@@ -101956,18 +101956,18 @@ class SentenceLibrary{
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`パンはパンでも食べられないパンは、なぁに？`);
-    //riddle is "bread is bread, but what kind of bread is inedible" answer is a frying pan because pan means bread in japanese
+                //riddle is "bread is bread, but what kind of bread is inedible" answer is a frying pan because pan means bread in japanese
             case 'es-es':
                 return this.sentence(`Tengo algo en mi mano. Oro no es. Plata no es. ¿Qué es? `);
-    //the riddle is "I have something in my hand. It's not gold. It's not silver. What is it? The answer is banana because plata, meaning silver, followed by no makes the spanish word platano, which means banana
+                //the riddle is "I have something in my hand. It's not gold. It's not silver. What is it? The answer is banana because plata, meaning silver, followed by no makes the spanish word platano, which means banana
             case 'en-us':
             case 'en-gb':
             default:
                 return this.sentence(`Beth’s mother has three daughters. One is called Lara, the other one is Sara. What is the name of the third daughter?`);
-        //it's Beth...
+                //it's Beth...
         }
     }
-      goCrazy(){
+    goCrazy(){
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`夢中になる！`);
