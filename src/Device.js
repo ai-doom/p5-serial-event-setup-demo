@@ -45,7 +45,7 @@ class ThresholdedSensor extends InputDevice{
         this.state = false;
     }
     tick(value){
-        
+        this.emit("tick", value);
         let over  = value > this.threshold;
         
         if(this.state != over){
