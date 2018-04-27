@@ -193,7 +193,118 @@ class SentenceLibrary{
                 return this.sentence(`Go crazy!`);
         }
     }
+       beginChallenge(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules. If not, I will find a way to kill you. Do not test me. You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+        }
+    }
+   squeezeMe(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`First, give me a squeeze`);
 }
+   }
+     tapMe(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Now, tap me. I need a top massage`);
+}
+   }
+  liftMe(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Quickly! Lift me for 5 seconds and then put me back down.`);
+}
+   }
+    pressButton(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Now press the following buttons and do not make a mistake or hesitate. White. Red. Green.`);
+}
+   }
+     petMe(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Pet me! I love to be pet!`);
+}
+   }
+     failComply(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+    
+            case 'es-es':
+                return this.sentence(``);
+    
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You have one more chance to do this before I kill you.`);
+}
+   }
+    successComply(){
+            switch (this.lang) {
+                case 'ja-jp':
+                    return this.sentence(``);
+
+                case 'es-es':
+                    return this.sentence(``);
+
+                case 'en-us':
+                case 'en-gb':
+                default:
+                    return this.sentence(`You have activated all of my strength.. I will rule!`);
+    }
+       }
 
 Array.prototype.randomElement = function () {
     return this[Math.floor(Math.random() * this.length)]
