@@ -102718,9 +102718,26 @@ function listen_new_conversation(){
     conversation_listener.once('press', async (tuple) =>{
         let [siriButton, e] = tuple
         if(siriButton){
-            siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
-            await pressAsk()
-            listen_new_conversation()
+            let quick_released = false;
+            let quick_release = async () => {
+                quick_released = true
+
+                siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
+
+                await pressAsk()
+                listen_new_conversation()
+            }
+            siriButton.once('release', quick_release)
+            await siri.start();
+            light.cyan()
+
+            if(!quick_released){
+                siriButton.off('release', quick_release)
+                siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
+            
+                await pressAsk()
+                listen_new_conversation()
+            }
         }else{
             if(e.key == 'n'){
                 await new_conversation();
@@ -102945,9 +102962,6 @@ async function ask_to_do_game(){
 }
 
 async function pressAsk(){
-    await siri.start();
-    light.cyan()
-
     let question = await askWithDialog('', false);
 
     if(question){
