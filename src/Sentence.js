@@ -192,7 +192,7 @@ export default class SentenceLibrary {
                 return this.sentence(`Go crazy!`);
         }
     }
-    beginChallenge1() {
+    welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);
@@ -208,7 +208,7 @@ export default class SentenceLibrary {
                     You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
-       beginChallenge2() {
+    beginChallenge() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);

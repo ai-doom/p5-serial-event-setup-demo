@@ -223,7 +223,10 @@ const deviceEvent = (device, event) => [device, event]
  */
 const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
     let [correct_device, _] = deviceEvent
-    let [waited_device, waited_event] = await wait_race(inDeviceEvents.push([wait, timeout]))
+    if(timeout){
+        inDeviceEvents.push([wait, timeout])
+    }
+    let [waited_device, waited_event] = await wait_race(inDeviceEvents)
     return waited_device == correct_device
 }
 
@@ -234,26 +237,40 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
+let welcomed = false
 
 async function ask_to_do_game(){
     let talker = new Talker(language);
 
     let instrction 
 
-    let devices = [photo, bend, touch]
+    let inDeviceEvents = [
+        [photo, 'press'], 
+        [bend, 'press'], 
+        [touch, 'press']
+    ]
+
+    if(!welcomed){
+        instrction = talker.welcomeChallenge()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        welcomed = true;
+    }
+
+    bgMusic.play();
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
     
-    bgMusic.play();
+    //  trail
 
     instrction = talker.liftMe()
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
     // 
-    if(!await wait_until_some_device(photo, 'press', devices)){
+    if(!await wait_until_some_device([photo, 'press'], inDeviceEvents, 4000)){
         instrction = talker.failComply()
         pop_busy_dialog(instrction.text, false)
         await instrction.play()
@@ -264,7 +281,7 @@ async function ask_to_do_game(){
     await instrction.play()
 
     // 
-    if(!await wait_until_some_device(bend, 'press', devices)){
+    if(!await wait_until_some_device([bend, 'press'], inDeviceEvents, 4000)){
         instrction = talker.failComply()
         pop_busy_dialog(instrction.text, false)
         await instrction.play()
