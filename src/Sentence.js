@@ -110,7 +110,7 @@ export default class SentenceLibrary {
     makeAngry() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`怒っている!`);
+                return this.sentence(`怒るよ!`);
 
             case 'es-es':
                 return this.sentence(`Estoy enojado!`);
@@ -152,7 +152,7 @@ export default class SentenceLibrary {
     singSong() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`歌うか死ぬか`);
+                return this.sentence(`歌うか、死ぬか、選べ！`);
 
             case 'es-es':
                 return this.sentence(`Canta o muere!`);

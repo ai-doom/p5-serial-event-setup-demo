@@ -102044,7 +102044,7 @@ class SentenceLibrary {
     makeAngry() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`怒っている!`);
+                return this.sentence(`怒るよ!`);
 
             case 'es-es':
                 return this.sentence(`Estoy enojado!`);
@@ -102086,7 +102086,7 @@ class SentenceLibrary {
     singSong() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`歌うか死ぬか`);
+                return this.sentence(`歌うか、死ぬか、選べ！`);
 
             case 'es-es':
                 return this.sentence(`Canta o muere!`);
@@ -102126,7 +102126,7 @@ class SentenceLibrary {
                 return this.sentence(`Go crazy!`);
         }
     }
-    beginChallenge() {
+    beginChallenge1() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);
@@ -102138,11 +102138,24 @@ class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
-                    If you want to keep your life, you must comply with the following rules. 
                     If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.
-                `);
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+        }
+    }
+       beginChallenge2() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`ゲム、スタート！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
     squeezeMe() {
@@ -102157,6 +102170,20 @@ class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`Squeeze　me!` );
+        }
+    }
+    tiltMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私を回転させて！`);
+
+            case 'es-es':
+                return this.sentence(`girarme`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Rotate Me` );
         }
     }
     tapMe() {
@@ -102187,6 +102214,20 @@ class SentenceLibrary {
                 return this.sentence(`Lift me!`);
         }
     }
+       pressMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私の腹のボタンを押してください！`);
+
+            case 'es-es':
+                return this.sentence(`Presiona mi ombligo!`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Press my furry belly button!` );
+        }
+    }
     pressButton() {
         switch (this.lang) {
             case 'ja-jp':
@@ -102199,6 +102240,48 @@ class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`Now press the following buttons and do not make a mistake or hesitate.`);
+        }
+    }
+      tryAgain() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`もう一度やり直しましょう。今回は、コマンドごとに3秒`);
+
+            case 'es-es':
+                return this.sentence(`Ahora intentaremos de nuevo.`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Now we will go again. This time, you have three seconds per command`);
+        }
+    }
+    timeChange() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`今回は、コマンドごとに3秒`);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes tres segundos por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have three seconds per command`);
+        }
+    }
+     cradleMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私は赤ちゃんです。クレードル私`);
+
+            case 'es-es':
+                return this.sentence(`Soy un bebe. Cuname.`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`I am a baby. Cradle me.`);
         }
     }
     petMe() {
@@ -102248,7 +102331,7 @@ class SentenceLibrary {
                 return this.sentence(`負けたよ〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Has fallado! Que triste!`);
 
             case 'en-us':
             case 'en-gb':
@@ -102264,7 +102347,7 @@ class SentenceLibrary {
                 return this.sentence(`勝たね〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Me has activado! Que poder!`);
 
             case 'en-us':
             case 'en-gb':
@@ -102534,7 +102617,7 @@ __webpack_require__.r(__webpack_exports__);
 
 let force = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](12);
 let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](360);
-let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](118);
+let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](10);
 let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](20000);
 
 let tilt_1 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
@@ -102729,11 +102812,21 @@ const listen_on_tick = (device)=>{
     return collect_event
 }
 
+const deviceEvent = (device, event) => [device, event]
 
 
-const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
-    // TODO: cancel not doing
-    return await Promise.race(all_devices.map(device => Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_until"])(device, event))) == correctDevice
+/**
+ * 
+ * 
+ * @param {[InputDevice, string]} deviceEvent 
+ * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
+ * @param {number} timeout 
+ * @returns {boolean} if the correct device is activated
+ */
+const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
+    let [correct_device, _] = deviceEvent
+    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout]))
+    return waited_device == correct_device
 }
 
 // var color_to_button = {
@@ -102749,7 +102842,7 @@ async function ask_to_do_game(){
 
     let instrction 
 
-    let devices = [photo, bend]
+    let devices = [photo, bend, touch]
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
@@ -103761,7 +103854,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.serialpor
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! exports provided: wait_until, wait_on, wait */
+/*! exports provided: wait_until, wait_on, wait, wait_race */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -103769,6 +103862,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_until", function() { return wait_until; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_on", function() { return wait_on; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait", function() { return wait; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_race", function() { return wait_race; });
 
 
 const wait_until = (obj, event) => new Promise(resolve => obj.once(event, resolve));
@@ -103777,6 +103871,26 @@ const wait_on = (obj, event) => new Promise(resolve => obj.on(event, resolve));
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+
+/**
+ * 
+ * 
+ * @param {[[EventListener, string] | [wait, number]]} device_events 
+ */
+const wait_race = (device_events) => Promise.race(
+    device_events.map(
+        async (device, event) => {
+            let result
+            if(device === wait){
+                await wait(event)
+                result = event;
+            }else{
+                result = await wait_until(device, event);
+            }
+            return [device, result]
+        }
+    )
+)
 
 /***/ }),
 
