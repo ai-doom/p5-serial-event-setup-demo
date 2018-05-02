@@ -197,9 +197,20 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ */
 function setup_device_for_value_connection(device){
     device.values_collcetion = []
 }
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ * @param {number} value 
+ */
 function collect_device_values(device, value){
     device.values_collcetion.push(value)
 }
@@ -209,6 +220,17 @@ const listen_on_tick = (device)=>{
     device.on('tick', collect_event);
     return collect_event
 }
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ * @param {number} factor 
+ */
+const set_device_value = (device, factor) => {
+    device.reset(device.values_collcetion, factor)
+    return device.threshold;
+}
+
 
 const deviceEvent = (device, event) => [device, event]
 
@@ -387,7 +409,7 @@ async function askWithDialog(title, autoStop=true){
     return result;
 }
 
-var language = 'en-us';
+var language = 'en-gb';
 
 async function responseToQuestion(question){
     let answer = await reason_question(question);
