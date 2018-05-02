@@ -225,6 +225,20 @@ export default class SentenceLibrary {
                 return this.sentence(`Squeeze　me!` );
         }
     }
+    tiltMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私を回転させて！`);
+
+            case 'es-es':
+                return this.sentence(`girarme`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Rotate Me` );
+        }
+    }
     tapMe() {
         switch (this.lang) {
             case 'ja-jp':
@@ -251,6 +265,20 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`Lift me!`);
+        }
+    }
+       pressMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私の腹のボタンを押してください！`);
+
+            case 'es-es':
+                return this.sentence(`Presiona mi ombligo!`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Press my belly button!` );
         }
     }
     pressButton() {
@@ -314,7 +342,7 @@ export default class SentenceLibrary {
                 return this.sentence(`負けたよ〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Has fallado! Que triste!`);
 
             case 'en-us':
             case 'en-gb':
@@ -330,7 +358,7 @@ export default class SentenceLibrary {
                 return this.sentence(`勝たね〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Me has activado! Que poder!`);
 
             case 'en-us':
             case 'en-gb':
