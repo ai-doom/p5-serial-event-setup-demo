@@ -4,21 +4,22 @@ import {Howl, Howler} from 'howler'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
-import {TimeAnalysizer, Button, ThresholdedSensor} from './Device.js'
+import {TimeAnalysizer, Button, ThresholdedSensor, Light} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
 import Talker , {Sentence} from './Sentence.js'
 import {wait, wait_until} from './utils.js'
 import { EventEmitter2 } from "eventemitter2";
+import { release } from "os";
 
-let piezo = new ThresholdedSensor(12);
+let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
 let photo = new ThresholdedSensor(118);
 let touch = new ThresholdedSensor(20000);
-let button1 = new Button(0, 0);
-let button2 = new Button(0, 0);
-let button3 = new Button(0, 0);
+
+let tilt_1 = new Button(0, 0);
+let tilt_2 = new Button(1, 1);
 
 let bgMusic = new Howl({
     src: ['UNIVOX8.WAV'],
@@ -26,11 +27,9 @@ let bgMusic = new Howl({
     volume: 0.5
 });
 
-let devices = [new TimeAnalysizer(), piezo, bend, photo, touch, button1, button2, button3]
+let devices = [new TimeAnalysizer(), force, bend, photo, touch, tilt_1, tilt_2]
 const board = new Board(devices);
 board.connect({baudrate: 9600});
-
-
 
 // debug raw value
 // board.on('line', line => {
@@ -42,37 +41,31 @@ board.connect({baudrate: 9600});
 //     console.log(`point`, point)
 // });
 
-button1.on('press', ()=>{
-    console.log('press','button1')
+force.on('press', ()=>{
+    console.log('press','force')
 })
-button2.on('press', ()=>{
-    console.log('press','button2')
-})
-button3.on('press', ()=>{
-    console.log('press','button3')
-})
-piezo.on('press', ()=>{
-    console.log('press','piezo')
-})
-// touch.on('press', ()=>{
-//     console.log('press','touch')
-// })
 
-
+touch.on('press', ()=>{
+    console.log('press','touch')
+})
 bend.on('press', ()=>{
     console.log('press','bend')
 })
 photo.on('press', ()=>{
     console.log('press','photo')
 })
-
+tilt_1.on('press', ()=>{
+    console.log('press','tilt_1')
+})
+tilt_2.on('press', ()=>{
+    console.log('press','tilt_2')
+})
 
 TextSpeech.getAuthorizations()
 
 const siri = new Siri();
 
 const default_siri_key = ' ';
-const if_siri_key_not_busy_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
 const if_siri_key_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
 
 const keyboard = new Keybaord();
@@ -105,20 +98,91 @@ class SiriButton extends EventEmitter2{
         })
     } 
 }
-let siriButton = new SiriButton([button2], keyboard);
+class NewConversationListener extends EventEmitter2{
+    constructor(){
+        super()
+        let siriButton = new SiriButton([force], keyboard);
+        siriButton.on('press', e => this.emit('press', [siriButton, e]));
+        siriButton.on('release',e => this.emit('release', [siriButton, e]))
+
+        keyboard.on('press', e => this.emit('press', [null, e]));
+        keyboard.on('release',e => this.emit('release', [null, e]))
+    }
+}
+let conversation_listener = new NewConversationListener()
+
+const light = new Light(board)
 
 function listen_new_conversation(){
-    siriButton.once('press', async ()=>{
-        siriButton.once('release', TextSpeech.mic_stop)
-        await pressAsk()
-        listen_new_conversation()
-    });
-    keyboard.once('press', async (e) =>{
-        if(e.key == 'n'){
-            await new_conversation();
+    conversation_listener.once('press', async (tuple) =>{
+        let [siriButton, e] = tuple
+        if(siriButton){
+            siriButton.once('release', TextSpeech.mic_stop)
+            await pressAsk()
             listen_new_conversation()
+        }else{
+            if(e.key == 'n'){
+                await new_conversation();
+                listen_new_conversation()
+            }
+            else if(e.key == 't'){
+                let input = await swal({
+                    title: `Text to Speech:`, 
+                    content: "input", 
+                    buttons: {
+                        cancel: {value:false, visible: true},
+                        confirm: true,
+                    },
+                });
+                if(input){
+                    let sentence =  new Sentence(input, language)
+                    await sentence.play()
+                }
+                listen_new_conversation()
+            }
+            else if(e.key == 'q'){
+                let input = await swal({
+                    title: `Question:`, 
+                    content: "input", 
+                    buttons: {
+                        cancel: {value:false, visible: true},
+                        confirm: true,
+                    },
+                });
+                if(input){
+                    let question = input;
+                    console.log('question', question);
+                    await responseToQuestion(question)
+                }
+                listen_new_conversation()
+            }
+            else if(e.key == '\\'){
+
+                let e_force = listen_on_tick(force)
+                let e_bend  = listen_on_tick(bend)
+                let e_photo = listen_on_tick(photo)
+                let e_touch = listen_on_tick(touch)
+
+                let release = (e)=>{
+                    if(e.key == '\\'){
+                        keyboard.off('release', release)
+                        
+                        console.log('force set', set_device_value(force, 3));
+                        console.log('bend  set', set_device_value(bend,  3));
+                        console.log('photo set', set_device_value(photo, 3));
+                        console.log('touch set', set_device_value(touch, 3));
+
+                        listen_new_conversation()
+                    }
+                }
+                keyboard.on('release', release)
+
+            }else{
+                listen_new_conversation()
+            }
+            
         }
-    });
+    })
 }
 listen_new_conversation();
 
@@ -133,101 +197,40 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 
-// TODO: Sample: setting threshold for device
-var p_values = [];
-var o_values = [];
-var i_values = [];
-var u_values = [];
-function collect_p(value){
-    p_values.push(value)
+function setup_device_for_value_connection(device){
+    device.values_collcetion = []
 }
-function collect_o(value){
-    o_values.push(value)
+function collect_device_values(device, value){
+    device.values_collcetion.push(value)
 }
-function collect_i(value){
-    i_values.push(value)
+const listen_on_tick = (device)=>{
+    setup_device_for_value_connection(device)
+    let collect_event = (value) => collect_device_values(device, value)
+    device.on('tick', collect_event);
+    return collect_event
 }
-function collect_u(value){
-    u_values.push(value)
-}
-keyboard.on('press', (e)=>{
-    // if(e.key == 'p'){
-    //     piezo.on('tick', collect_p)
-    // }else if(e.key == 'o'){
-    //     bend.on('tick', collect_o)
-    // }
-    // else if(e.key == 'i'){
-    //     photo.on('tick', collect_i)
-    // }
-    // else if(e.key == 'u'){
-    //     touch.on('tick', collect_u)
-    // }
-    if(e.key == '\\'){
-        piezo.on('tick', collect_p)
-        bend.on('tick', collect_o)
-        photo.on('tick', collect_i)
-        touch.on('tick', collect_u)
-    }
-})
-keyboard.on('release', (e)=>{
-    // if(e.key == 'p'){
-    //     piezo.off('tick', collect_p)
-    //     piezo.reset(p_values, 10)
-    //     console.log('piezo set', piezo.threshold);
-        
-    // }else if(e.key == 'o'){
-    //     bend.off('tick', collect_o)
-    //     bend.reset(o_values, 3)
-    //     console.log('bend set', bend.threshold);
-    // }
-    // else if(e.key == 'i'){
-    //     photo.off('tick', collect_i)
-    //     photo.reset(i_values, 3)
-    //     console.log('photo set', photo.threshold);
-    // }
-    // else if(e.key == 'u'){
-    //     touch.off('tick', collect_u)
-    //     touch.reset(u_values, 3)
-    //     console.log('touch set', touch.threshold);
-    // }
-    if(e.key == '\\'){
-        piezo.off('tick', collect_p)
-        piezo.reset(p_values, 10)
-        console.log('piezo set', piezo.threshold);
 
-        bend.off('tick', collect_o)
-        bend.reset(o_values, 3)
-        console.log('bend set', bend.threshold);
 
-        photo.off('tick', collect_i)
-        photo.reset(i_values, 3)
-        console.log('photo set', photo.threshold);
-
-        touch.off('tick', collect_u)
-        touch.reset(u_values, 3)
-        console.log('touch set', touch.threshold);
-    }
-})
 
 const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
     // TODO: cancel not doing
     return await Promise.race(all_devices.map(device => wait_until(device, event))) == correctDevice
 }
 
-var color_to_button = {
-    'white': button3,
-    'red': button2,
-    'blue': button1,
-}
-var possible_buttons = ['white', 'red', 'blue']
+// var color_to_button = {
+//     'white': button3,
+//     'red': button2,
+//     'blue': button1,
+// }
+// var possible_buttons = ['white', 'red', 'blue']
 
-// TODO: Sample:
+
 async function ask_to_do_game(){
     let talker = new Talker(language);
 
     let instrction 
 
-    let devices = [button1, button2, button3, photo, bend]
+    let devices = [photo, bend]
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
@@ -258,78 +261,27 @@ async function ask_to_do_game(){
         return bgMusic.stop();
     }
 
-    let buttons = [button1, button2, button3]
-    instrction = talker.pressButton()
-    await instrction.play()
+    // TODO: Game:
 
-    let color 
-    let button
+    // let buttons = [button1, button2, button3]
+    // instrction = talker.pressButton()
+    // await instrction.play()
 
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
+    // let color 
+    // let button
+
+    // color= possible_buttons.randomElement();
+    // button = color_to_button[color]
+    // instrction = talker.buttonName(color)
+    // instrction.play()
+    // if(!await wait_until_some_device(button, 'press', buttons)){
+    //     instrction = talker.failComply()
+    //     pop_busy_dialog(instrction.text, false)
+    //     await instrction.play()
+    //     return bgMusic.stop();
+    // }
     
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-    
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-    
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-    
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-    
-    color= possible_buttons.randomElement();
-    button = color_to_button[color]
-    instrction = talker.buttonName(color)
-    instrction.play()
-    if(!await wait_until_some_device(button, 'press', buttons)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
+
     
 
 
@@ -344,24 +296,30 @@ async function ask_to_do_game(){
 
 async function pressAsk(){
     await siri.start();
+    light.cyan()
 
     let question = await askWithDialog('', false);
 
     if(question){
         siri.done()
+        light.white()
         await responseToQuestion(question)
     }else{
         siri.cancel()
+        light.white()
     }
 }
 async function instantAsk(previosQuestions){
     await siri.start()
+    light.cyan()
     let question = await askWithDialog(previosQuestions)
     if(question){
         siri.done()
+        light.white()
         await responseToQuestion(question)
     }else{
         siri.cancel()
+        light.white()
     }
 }
 
@@ -372,7 +330,7 @@ async function new_conversation(){
     pop_busy_dialog(siri_question.text, false);
     await siri_question.play();
 
-    await ask_with_dialog_and_indicator_sound(siri_question.text)
+    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
 
     siri_question = talker.hi(name);
     pop_busy_dialog(siri_question.text, false);
@@ -383,8 +341,10 @@ async function new_conversation(){
 
 async function ask_with_dialog_and_indicator_sound(title, autoStop=true){
     await siri.start()
-    let name = await askWithDialog(title, autoStop=true)
+    light.cyan()
+    let result = await askWithDialog(title, autoStop=true)
     siri.done()
+    light.white()
     return result;
 }
 async function askWithDialog(title, autoStop=true){
@@ -399,49 +359,6 @@ async function askWithDialog(title, autoStop=true){
     let result = await TextSpeech.mic_to_text(language, autoStop, recording[0]);
     return result;
 }
-
-
-function isBusy(){
-    let state = swal.getState();
-    return state.isOpen && state.actions.cancel.value === false;
-}
-
-
-keyboard.on('press', async (e) =>{
-    if(e.key == 't' && !isBusy()){
-        let input = await swal({
-            title: `Text to Speech:`, 
-            content: "input", 
-            buttons: {
-                cancel: {value:false, visible: true},
-                confirm: true,
-            },
-        });
-        if(input){
-            let sentence =  new Sentence(input, language)
-            await sentence.play()
-        }
-    }
-});
-keyboard.on('press', async (e) =>{
-    if(e.key == 'q' && !isBusy()){
-        let input = await swal({
-            title: `Question:`, 
-            content: "input", 
-            buttons: {
-                cancel: {value:false, visible: true},
-                confirm: true,
-            },
-        });
-        if(input){
-            let question = input;
-            console.log('question', question);
-            await responseToQuestion(question)
-        }
-    }
-});
-
-window.isBusy = isBusy;
 
 var language = 'en-us';
 
