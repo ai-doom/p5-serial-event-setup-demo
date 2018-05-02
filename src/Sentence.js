@@ -192,7 +192,7 @@ export default class SentenceLibrary {
                 return this.sentence(`Go crazy!`);
         }
     }
-    beginChallenge() {
+    beginChallenge1() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);
@@ -204,11 +204,24 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
-                    If you want to keep your life, you must comply with the following rules. 
                     If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.
-                `);
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+        }
+    }
+       beginChallenge2() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`ゲム、スタート！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
     squeezeMe() {
@@ -223,6 +236,20 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`Squeeze　me!` );
+        }
+    }
+    tiltMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私を回転させて！`);
+
+            case 'es-es':
+                return this.sentence(`girarme`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Rotate Me` );
         }
     }
     tapMe() {
@@ -253,6 +280,20 @@ export default class SentenceLibrary {
                 return this.sentence(`Lift me!`);
         }
     }
+       pressMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私の腹のボタンを押してください！`);
+
+            case 'es-es':
+                return this.sentence(`Presiona mi ombligo!`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Press my furry belly button!` );
+        }
+    }
     pressButton() {
         switch (this.lang) {
             case 'ja-jp':
@@ -265,6 +306,48 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`Now press the following buttons and do not make a mistake or hesitate.`);
+        }
+    }
+      tryAgain() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`もう一度やり直しましょう。今回は、コマンドごとに3秒`);
+
+            case 'es-es':
+                return this.sentence(`Ahora intentaremos de nuevo.`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Now we will go again. This time, you have three seconds per command`);
+        }
+    }
+    timeChange() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`今回は、コマンドごとに3秒`);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes tres segundos por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have three seconds per command`);
+        }
+    }
+     cradleMe() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`私は赤ちゃんです。クレードル私`);
+
+            case 'es-es':
+                return this.sentence(`Soy un bebe. Cuname.`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`I am a baby. Cradle me.`);
         }
     }
     petMe() {
@@ -314,7 +397,7 @@ export default class SentenceLibrary {
                 return this.sentence(`負けたよ〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Has fallado! Que triste!`);
 
             case 'en-us':
             case 'en-gb':
@@ -330,7 +413,7 @@ export default class SentenceLibrary {
                 return this.sentence(`勝たね〜`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Me has activado! Que poder!`);
 
             case 'en-us':
             case 'en-gb':
