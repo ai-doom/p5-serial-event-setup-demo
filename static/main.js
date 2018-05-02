@@ -102126,7 +102126,7 @@ class SentenceLibrary {
                 return this.sentence(`Go crazy!`);
         }
     }
-    beginChallenge1() {
+    welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);
@@ -102138,11 +102138,10 @@ class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules.`);
         }
     }
-       beginChallenge2() {
+    beginChallenge() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`ゲム、スタート！`);
@@ -102825,7 +102824,10 @@ const deviceEvent = (device, event) => [device, event]
  */
 const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
     let [correct_device, _] = deviceEvent
-    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout]))
+    if(timeout){
+        inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout])
+    }
+    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents)
     return waited_device == correct_device
 }
 
@@ -102836,26 +102838,40 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
+let welcomed = false
 
 async function ask_to_do_game(){
     let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
 
     let instrction 
 
-    let devices = [photo, bend, touch]
+    let inDeviceEvents = [
+        [photo, 'press'], 
+        [bend, 'press'], 
+        [touch, 'press']
+    ]
+
+    if(!welcomed){
+        instrction = talker.welcomeChallenge()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+        welcomed = true;
+    }
+
+    bgMusic.play();
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
     
-    bgMusic.play();
+    //  trail
 
     instrction = talker.liftMe()
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
     // 
-    if(!await wait_until_some_device(photo, 'press', devices)){
+    if(!await wait_until_some_device([photo, 'press'], inDeviceEvents, 4000)){
         instrction = talker.failComply()
         pop_busy_dialog(instrction.text, false)
         await instrction.play()
@@ -102866,7 +102882,7 @@ async function ask_to_do_game(){
     await instrction.play()
 
     // 
-    if(!await wait_until_some_device(bend, 'press', devices)){
+    if(!await wait_until_some_device([bend, 'press'], inDeviceEvents, 4000)){
         instrction = talker.failComply()
         pop_busy_dialog(instrction.text, false)
         await instrction.play()
