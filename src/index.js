@@ -330,7 +330,7 @@ async function new_conversation(){
     pop_busy_dialog(siri_question.text, false);
     await siri_question.play();
 
-    await ask_with_dialog_and_indicator_sound(siri_question.text)
+    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
 
     siri_question = talker.hi(name);
     pop_busy_dialog(siri_question.text, false);
@@ -342,7 +342,7 @@ async function new_conversation(){
 async function ask_with_dialog_and_indicator_sound(title, autoStop=true){
     await siri.start()
     light.cyan()
-    let name = await askWithDialog(title, autoStop=true)
+    let result = await askWithDialog(title, autoStop=true)
     siri.done()
     light.white()
     return result;
