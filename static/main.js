@@ -101863,28 +101863,28 @@ class Light extends SimpleOutputDevice{
         this.board.write(id)
     }
     red(){
-        change_color_id(0)
+        this.change_color_id(0)
     }
     green(){
-        change_color_id(1)
+        this.change_color_id(1)
     }
     blue(){
-        change_color_id(2)
+        this.change_color_id(2)
     }
     yellow(){
-        change_color_id(3)
+        this.change_color_id(3)
     }
     pupple(){
-        change_color_id(4)
+        this.change_color_id(4)
     }
     cyan(){
-        change_color_id(5)
+        this.change_color_id(5)
     }
     white(){
-        change_color_id(6)
+        this.change_color_id(6)
     }
     off(){
-        change_color_id(7)
+        this.change_color_id(7)
     }
 }
 
