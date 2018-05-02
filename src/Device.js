@@ -1,6 +1,6 @@
 import EventEmitter2 from "eventemitter2"
 import {mean, variance} from 'simple-statistics'
-
+import {Board} from './Arduino'
 export
 class InputDevice extends EventEmitter2{
     tick(value){
@@ -101,5 +101,59 @@ class CatagorialReader extends InputDevice{
             this.emit("change", value);
             this.value = value;
         }
+    }
+}
+
+
+export 
+class SimpleOutputDevice extends EventEmitter2{
+    /**
+     * Creates an instance of SimpleOutputDevice.
+     * @param {Board} board 
+     * @memberof SimpleOutputDevice
+     */
+    constructor(board){
+        super()
+        this.board = board
+    }
+}
+
+export 
+class Light extends SimpleOutputDevice{
+    change_color(r, g, b){
+        // this.board.write()
+    }
+    /**
+     * 
+     * 
+     * @param {Number} id 
+     * @memberof Light
+     */
+    change_color_id(id){
+        this.board.write(id)
+    }
+    red(){
+        change_color_id(0)
+    }
+    green(){
+        change_color_id(1)
+    }
+    blue(){
+        change_color_id(2)
+    }
+    yellow(){
+        change_color_id(3)
+    }
+    pupple(){
+        change_color_id(4)
+    }
+    cyan(){
+        change_color_id(5)
+    }
+    white(){
+        change_color_id(6)
+    }
+    off(){
+        change_color_id(7)
     }
 }

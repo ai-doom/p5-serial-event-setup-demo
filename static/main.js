@@ -101718,7 +101718,7 @@ class Board extends eventemitter2__WEBPACK_IMPORTED_MODULE_2___default.a{
 /*!***********************!*\
   !*** ./src/Device.js ***!
   \***********************/
-/*! exports provided: InputDevice, TimeAnalysizer, Button, ThresholdedSensor, CapasitiveSensor, AnalogReader, CatagorialReader */
+/*! exports provided: InputDevice, TimeAnalysizer, Button, ThresholdedSensor, CapasitiveSensor, AnalogReader, CatagorialReader, SimpleOutputDevice, Light */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -101730,10 +101730,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CapasitiveSensor", function() { return CapasitiveSensor; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AnalogReader", function() { return AnalogReader; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CatagorialReader", function() { return CatagorialReader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SimpleOutputDevice", function() { return SimpleOutputDevice; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Light", function() { return Light; });
 /* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventemitter2 */ "./node_modules/eventemitter2/lib/eventemitter2.js");
 /* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(eventemitter2__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var simple_statistics__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! simple-statistics */ "./node_modules/simple-statistics/dist/simple-statistics.min.js");
 /* harmony import */ var simple_statistics__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(simple_statistics__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Arduino__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Arduino */ "./src/Arduino.js");
 
 
 
@@ -101833,6 +101836,57 @@ class CatagorialReader extends InputDevice{
     }
 }
 
+
+class SimpleOutputDevice extends eventemitter2__WEBPACK_IMPORTED_MODULE_0___default.a{
+    /**
+     * Creates an instance of SimpleOutputDevice.
+     * @param {Board} board 
+     * @memberof SimpleOutputDevice
+     */
+    constructor(board){
+        super()
+        this.board = board
+    }
+}
+
+class Light extends SimpleOutputDevice{
+    change_color(r, g, b){
+        // this.board.write()
+    }
+    /**
+     * 
+     * 
+     * @param {Number} id 
+     * @memberof Light
+     */
+    change_color_id(id){
+        this.board.write(id)
+    }
+    red(){
+        change_color_id(0)
+    }
+    green(){
+        change_color_id(1)
+    }
+    blue(){
+        change_color_id(2)
+    }
+    yellow(){
+        change_color_id(3)
+    }
+    pupple(){
+        change_color_id(4)
+    }
+    cyan(){
+        change_color_id(5)
+    }
+    white(){
+        change_color_id(6)
+    }
+    off(){
+        change_color_id(7)
+    }
+}
 
 /***/ }),
 
@@ -102531,7 +102585,6 @@ _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["getAuthorizations"]()
 const siri = new _Siri_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
 
 const default_siri_key = ' ';
-const if_siri_key_not_busy_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey && !isBusy()){return await async_callable()} return false}
 const if_siri_key_do =  (async_callable, siriKey = default_siri_key) => async (e) => { if(e.key == siriKey){return await async_callable()} return false}
 
 const keyboard = new _Keyboard_js__WEBPACK_IMPORTED_MODULE_5__["Keybaord"]();
@@ -102568,25 +102621,58 @@ class NewConversationListener extends eventemitter2__WEBPACK_IMPORTED_MODULE_10_
     constructor(){
         super()
         let siriButton = new SiriButton([force], keyboard);
-        siriButton.once('press', e => this.emit('press', (true, e)));
-        siriButton.once('release',e => this.emit('release', (true, e)))
+        siriButton.on('press', e => this.emit('press', [siriButton, e]));
+        siriButton.on('release',e => this.emit('release', [siriButton, e]))
 
-        keyboard.once('press', e => this.emit('press', (false, e)));
-        keyboard.once('release',e => this.emit('release', (false, e)))
+        keyboard.on('press', e => this.emit('press', [null, e]));
+        keyboard.on('release',e => this.emit('release', [null, e]))
     }
 }
 let conversation_listener = new NewConversationListener()
 
+const light = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Light"](board)
 
 function listen_new_conversation(){
-    conversation_listener.once('press', async (is_button, e) =>{
-        if(is_button){
+    conversation_listener.once('press', async (tuple) =>{
+        let [siriButton, e] = tuple
+        if(siriButton){
             siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
             await pressAsk()
             listen_new_conversation()
         }else{
             if(e.key == 'n'){
                 await new_conversation();
+                listen_new_conversation()
+            }
+            else if(e.key == 't'){
+                let input = await sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    title: `Text to Speech:`, 
+                    content: "input", 
+                    buttons: {
+                        cancel: {value:false, visible: true},
+                        confirm: true,
+                    },
+                });
+                if(input){
+                    let sentence =  new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["Sentence"](input, language)
+                    await sentence.play()
+                }
+                listen_new_conversation()
+            }
+            else if(e.key == 'q'){
+                let input = await sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    title: `Question:`, 
+                    content: "input", 
+                    buttons: {
+                        cancel: {value:false, visible: true},
+                        confirm: true,
+                    },
+                });
+                if(input){
+                    let question = input;
+                    console.log('question', question);
+                    await responseToQuestion(question)
+                }
                 listen_new_conversation()
             }
             else if(e.key == '\\'){
@@ -102596,8 +102682,9 @@ function listen_new_conversation(){
                 let e_photo = listen_on_tick(photo)
                 let e_touch = listen_on_tick(touch)
 
-                keyboard.on('release', (e)=>{
+                let release = (e)=>{
                     if(e.key == '\\'){
+                        keyboard.off('release', release)
                         
                         console.log('force set', set_device_value(force, 3));
                         console.log('bend  set', set_device_value(bend,  3));
@@ -102606,11 +102693,13 @@ function listen_new_conversation(){
 
                         listen_new_conversation()
                     }
-                })
+                }
+                keyboard.on('release', release)
 
             }else{
                 listen_new_conversation()
             }
+            
         }
     })
 }
@@ -102633,7 +102722,7 @@ function setup_device_for_value_connection(device){
 function collect_device_values(device, value){
     device.values_collcetion.push(value)
 }
-let listen_on_tick = (device)=>{
+const listen_on_tick = (device)=>{
     setup_device_for_value_connection(device)
     let collect_event = (value) => collect_device_values(device, value)
     device.on('tick', collect_event);
@@ -102654,13 +102743,13 @@ const wait_until_some_device = async (correctDevice, event='press', all_devices 
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
-// TODO: Sample:
+
 async function ask_to_do_game(){
     let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
 
     let instrction 
 
-    let devices = [button1, button2, button3, photo, bend]
+    let devices = [photo, bend]
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
@@ -102690,6 +102779,8 @@ async function ask_to_do_game(){
         await instrction.play()
         return bgMusic.stop();
     }
+
+    // TODO: Game:
 
     // let buttons = [button1, button2, button3]
     // instrction = talker.pressButton()
@@ -102724,24 +102815,30 @@ async function ask_to_do_game(){
 
 async function pressAsk(){
     await siri.start();
+    light.cyan()
 
     let question = await askWithDialog('', false);
 
     if(question){
         siri.done()
+        light.white()
         await responseToQuestion(question)
     }else{
         siri.cancel()
+        light.white()
     }
 }
 async function instantAsk(previosQuestions){
     await siri.start()
+    light.cyan()
     let question = await askWithDialog(previosQuestions)
     if(question){
         siri.done()
+        light.white()
         await responseToQuestion(question)
     }else{
         siri.cancel()
+        light.white()
     }
 }
 
@@ -102763,8 +102860,10 @@ async function new_conversation(){
 
 async function ask_with_dialog_and_indicator_sound(title, autoStop=true){
     await siri.start()
+    light.cyan()
     let name = await askWithDialog(title, autoStop=true)
     siri.done()
+    light.white()
     return result;
 }
 async function askWithDialog(title, autoStop=true){
@@ -102779,49 +102878,6 @@ async function askWithDialog(title, autoStop=true){
     let result = await _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_to_text"](language, autoStop, recording[0]);
     return result;
 }
-
-
-function isBusy(){
-    let state = sweetalert__WEBPACK_IMPORTED_MODULE_2___default.a.getState();
-    return state.isOpen && state.actions.cancel.value === false;
-}
-
-
-keyboard.on('press', async (e) =>{
-    if(e.key == 't' && !isBusy()){
-        let input = await sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-            title: `Text to Speech:`, 
-            content: "input", 
-            buttons: {
-                cancel: {value:false, visible: true},
-                confirm: true,
-            },
-        });
-        if(input){
-            let sentence =  new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["Sentence"](input, language)
-            await sentence.play()
-        }
-    }
-});
-keyboard.on('press', async (e) =>{
-    if(e.key == 'q' && !isBusy()){
-        let input = await sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-            title: `Question:`, 
-            content: "input", 
-            buttons: {
-                cancel: {value:false, visible: true},
-                confirm: true,
-            },
-        });
-        if(input){
-            let question = input;
-            console.log('question', question);
-            await responseToQuestion(question)
-        }
-    }
-});
-
-window.isBusy = isBusy;
 
 var language = 'en-us';
 
