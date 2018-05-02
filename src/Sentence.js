@@ -204,8 +204,7 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules.`);
         }
     }
     beginChallenge() {
