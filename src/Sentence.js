@@ -291,7 +291,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Press my belly button!` );
+                return this.sentence(`Press my furry belly button!` );
         }
     }
     pressButton() {
