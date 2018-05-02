@@ -4,18 +4,18 @@ import {Howl, Howler} from 'howler'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
-import {TimeAnalysizer, Button, ThresholdedSensor, Light} from './Device.js'
+import {TimeAnalysizer, Button, ThresholdedSensor, Light, InputDevice} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
 import Talker , {Sentence} from './Sentence.js'
-import {wait, wait_until} from './utils.js'
+import {wait, wait_until, wait_race} from './utils.js'
 import { EventEmitter2 } from "eventemitter2";
 import { release } from "os";
 
 let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
-let photo = new ThresholdedSensor(118);
+let photo = new ThresholdedSensor(10);
 let touch = new ThresholdedSensor(20000);
 
 let tilt_1 = new Button(0, 0);
@@ -210,11 +210,21 @@ const listen_on_tick = (device)=>{
     return collect_event
 }
 
+const deviceEvent = (device, event) => [device, event]
 
 
-const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
-    // TODO: cancel not doing
-    return await Promise.race(all_devices.map(device => wait_until(device, event))) == correctDevice
+/**
+ * 
+ * 
+ * @param {[InputDevice, string]} deviceEvent 
+ * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
+ * @param {number} timeout 
+ * @returns {boolean} if the correct device is activated
+ */
+const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
+    let [correct_device, _] = deviceEvent
+    let [waited_device, waited_event] = await wait_race(inDeviceEvents.push([wait, timeout]))
+    return waited_device == correct_device
 }
 
 // var color_to_button = {
@@ -230,7 +240,7 @@ async function ask_to_do_game(){
 
     let instrction 
 
-    let devices = [photo, bend]
+    let devices = [photo, bend, touch]
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)

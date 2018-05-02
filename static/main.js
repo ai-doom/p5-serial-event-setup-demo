@@ -102044,7 +102044,7 @@ class SentenceLibrary {
     makeAngry() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`怒っている!`);
+                return this.sentence(`怒るよ!`);
 
             case 'es-es':
                 return this.sentence(`Estoy enojado!`);
@@ -102086,7 +102086,7 @@ class SentenceLibrary {
     singSong() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`歌うか死ぬか`);
+                return this.sentence(`歌うか、死ぬか、選べ！`);
 
             case 'es-es':
                 return this.sentence(`Canta o muere!`);
@@ -102534,7 +102534,7 @@ __webpack_require__.r(__webpack_exports__);
 
 let force = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](12);
 let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](360);
-let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](118);
+let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](10);
 let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](20000);
 
 let tilt_1 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
@@ -102729,11 +102729,21 @@ const listen_on_tick = (device)=>{
     return collect_event
 }
 
+const deviceEvent = (device, event) => [device, event]
 
 
-const wait_until_some_device = async (correctDevice, event='press', all_devices = devices) => {
-    // TODO: cancel not doing
-    return await Promise.race(all_devices.map(device => Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_until"])(device, event))) == correctDevice
+/**
+ * 
+ * 
+ * @param {[InputDevice, string]} deviceEvent 
+ * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
+ * @param {number} timeout 
+ * @returns {boolean} if the correct device is activated
+ */
+const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
+    let [correct_device, _] = deviceEvent
+    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout]))
+    return waited_device == correct_device
 }
 
 // var color_to_button = {
@@ -102749,7 +102759,7 @@ async function ask_to_do_game(){
 
     let instrction 
 
-    let devices = [photo, bend]
+    let devices = [photo, bend, touch]
 
     instrction = talker.beginChallenge()
     pop_busy_dialog(instrction.text, false)
@@ -103761,7 +103771,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! p5.serialpor
 /*!**********************!*\
   !*** ./src/utils.js ***!
   \**********************/
-/*! exports provided: wait_until, wait_on, wait */
+/*! exports provided: wait_until, wait_on, wait, wait_race */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -103769,6 +103779,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_until", function() { return wait_until; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_on", function() { return wait_on; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait", function() { return wait; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wait_race", function() { return wait_race; });
 
 
 const wait_until = (obj, event) => new Promise(resolve => obj.once(event, resolve));
@@ -103777,6 +103788,26 @@ const wait_on = (obj, event) => new Promise(resolve => obj.on(event, resolve));
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+
+/**
+ * 
+ * 
+ * @param {[[EventListener, string] | [wait, number]]} device_events 
+ */
+const wait_race = (device_events) => Promise.race(
+    device_events.map(
+        async (device, event) => {
+            let result
+            if(device === wait){
+                await wait(event)
+                result = event;
+            }else{
+                result = await wait_until(device, event);
+            }
+            return [device, result]
+        }
+    )
+)
 
 /***/ }),
 
