@@ -310,7 +310,7 @@ export default class SentenceLibrary {
       tryAgain() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`もう一度やり直しましょう。今回は、コマンドごとに3秒`);
+                return this.sentence(`もう一度やり直しましょう`);
 
             case 'es-es':
                 return this.sentence(`Ahora intentaremos de nuevo.`);
@@ -318,7 +318,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Now we will go again. This time, you have three seconds per command`);
+                return this.sentence(`Now we will go again.`);
         }
     }
     timeChange() {
@@ -333,6 +333,34 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`This time, you have three seconds per command`);
+        }
+    }
+     timeChange2() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes dos segundos por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have two seconds per command`);
+        }
+    }
+     timeChange3() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes un segundo por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have one second per command`);
         }
     }
      cradleMe() {
