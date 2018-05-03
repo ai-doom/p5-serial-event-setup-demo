@@ -355,14 +355,23 @@ async function ask_to_do_game(){
 
     while (true) {
         timeout = initialDuration/(progress_speed * round);
-        game =  possible_game_matches.randomElement();
-        win = await game.play(timeout);
-        if(win){
-            round += 1;
-            
-        }else{
+
+        instrction = talker.have_seconds(timeout)
+        await instrction.play()
+
+        for (let index = 0; index < 6; index++) {
+            game =  possible_game_matches.randomElement();
+            win = await game.play(timeout);
+            if(!win){
+                break
+            }
+        }
+
+        if(!win){
             break
         }
+
+        round += 1
     }
     if (round > 3){
         difficualty += 1

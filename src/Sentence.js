@@ -434,6 +434,21 @@ export default class SentenceLibrary {
                 return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
+    have_seconds(milisencond){
+        let seconds = math.floor(milisencond/1000)
+        switch (this.lang) {
+            case 'ja-jp':
+                
+
+            case 'es-es':
+                
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You have ${seconds} senconds.`);
+        }
+    }
 }
 
 Array.prototype.randomElement = function () {
