@@ -391,6 +391,11 @@ async function ask_to_do_game(){
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
             win = await game.play(timeout);
+            if(win){
+                positiveSound.play()
+            }else{
+                negativeSound.play()
+            }
             if(!win){
                 break
             }
