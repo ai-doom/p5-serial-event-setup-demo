@@ -379,6 +379,76 @@ export default class SentenceLibrary {
                 return this.sentence(`This time, you have one second per command`);
         }
     }
+    levelOne() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`押して！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You managed to complete the first set of tasks. Is it luck or is it skill? Let's find out.` );
+        }
+    }
+    levelTwo() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`押して！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`If you think that is all that I am going to ask of you, you are surely mistaken. Proceed peasant.` );
+        }
+    }
+     levelThree() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`押して！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Okay. So you're up for a challenge. Let's see how far you are willing to go to please me.` );
+        }
+    }
+     levelFour() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`押して！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`I feel my power growing. Yes! Yes! Yes!` );
+        }
+    }
+    levelFive() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`押して！`);
+
+            case 'es-es':
+                return this.sentence(``);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Listen to my every command human. Give me more power!` );
+        }
+    }
      cradleMe() {
         switch (this.lang) {
             case 'ja-jp':
