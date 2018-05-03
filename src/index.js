@@ -269,7 +269,12 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
         inDeviceEvents.push([wait, timeout])
     }
     let [waited_device, waited_event] = await wait_race(inDeviceEvents)
-    return waited_device == correct_device
+    // console.log(waited_device)
+    if(inDeviceEvents.length <= 1){
+        return waited_device !== wait
+    }else{
+        return waited_device == correct_device
+    }
 }
 
 // var color_to_button = {
@@ -279,9 +284,28 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
+class GameMatch{
+    constructor(instrction, deviceEvent, allDeviceEvents = []){
+        this.instrction = instrction
+        this.deviceEvent = deviceEvent
+        this.inDeviceEvents = allDeviceEvents
+        this.inDeviceEvents.push(deviceEvent)
+    }
+    async play(timeout){
+        pop_busy_dialog(this.instrction.text, false)
+
+        await this.instrction.play()
+        await wait(150)
+
+        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
+    }
+}
+
 let welcomed = false
+var difficualty = 1;
 function reset_states(){
-    welcomed = false
+    welcomed = false;
+    difficualty = 1;
 }
 
 
@@ -290,33 +314,20 @@ async function ask_to_do_game(){
 
     let instrction 
     
-    let inDeviceEvents = [
+    let allInDeviceEvents = [
         [photo, 'press'], 
         [bend, 'press'], 
         [touch, 'press']
     ]
 
-    class GameMatch{
-        constructor(instrction, deviceEvent, allDeviceEvents = inDeviceEvents){
-            this.instrction = instrction
-            this.deviceEvent = deviceEvent
-            this.inDeviceEvents = allDeviceEvents
-        }
-        async play(timeout){
-            pop_busy_dialog(this.instrction.text, false)
-
-            this.instrction.play()
-            await wait(20)
-
-            return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
-        }
-    }
+    let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
 
     let possible_game_matches = [
-        new GameMatch(talker.liftMe(), [photo, 'press']),
-        new GameMatch(talker.squeezeMe(), [bend, 'press']),
-        new GameMatch(talker.tapMe(), [touch, 'press'])
+        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents ),
+        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents)
     ]
+
 
     if(!welcomed){
         instrction = talker.welcomeChallenge()
@@ -337,8 +348,13 @@ async function ask_to_do_game(){
     let game ;
     let win ;
     let progress_speed = 0.5;
+    let initialDuration = 8000;
+    if( difficualty > 2 ){
+        progress_speed = 1;
+    }
+
     while (true) {
-        timeout = 8000/(progress_speed * round);
+        timeout = initialDuration/(progress_speed * round);
         game =  possible_game_matches.randomElement();
         win = await game.play(timeout);
         if(win){
@@ -350,7 +366,7 @@ async function ask_to_do_game(){
     }
     console.log(`Fianl timeout: ${timeout}`)
 
-    instrction = talker.made_round(round - 1)
+    instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
@@ -460,6 +476,17 @@ async function reason_question(question){
 
                 return talker.okey(`${new_langauge_literal} に換えました。`);
 
+            }else if(question.match(/難度|難し/i)){
+                if(question.match(/ハード|難しい/i)){
+                    difficualty = 3
+                }else if(question.match(/ノーマル|普通/i)){
+                    difficualty = 2
+                }else if(question.match(/イージー|簡単/i)){
+                    difficualty = 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/ゲム|ゲーム/i)){
                 await ask_to_do_game()
                 return ''
@@ -512,10 +539,24 @@ async function reason_question(question){
 
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
 
+            }else if(question.match(/difficulty|difficult|difficulter/i)){
+                if(question.match(/hard/i)){
+                    difficualty = 3
+                }else if(question.match(/normal/i)){
+                    difficualty = 2
+                }else if(question.match(/easy/i)){
+                    difficualty = 1
+                }else if(question.match(/easier/i)){
+                    difficualty -= 1
+                }else if(question.match(/harder|difficulter/i)){
+                    difficualty += 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/game/i)){
                 await ask_to_do_game()
                 return ''
-
             }else if(question.match(/reset/i)){
                 reset_states()
                 return talker.okey()

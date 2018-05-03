@@ -102146,7 +102146,7 @@ class SentenceLibrary {
     welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`ゲム、スタート！`);
+                return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！我れ試さないてね〜`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -102156,7 +102156,9 @@ class SentenceLibrary {
             default:
                 return this.sentence(`
                     I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
-                    If you want to keep your life, you must comply with the following rules.`);
+                    If you want to keep your life, you must comply with the following rules.
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
     beginChallenge() {
@@ -102170,9 +102172,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`
-                    If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                return this.sentence(`Game Start!`);
         }
     }
     squeezeMe() {
@@ -102357,10 +102357,10 @@ class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
-    made_round(round) {
+    made_round(round, difficulty) {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`${round} 回を達成しました〜`);
+                return this.sentence(`難度 ${difficulty} に、 ${round} 回を達成しました〜`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
@@ -102368,7 +102368,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have completed ${round} rounds!`);
+                return this.sentence(`You have completed ${round} rounds on level ${difficulty}!`);
         }
     }
     successComply() {
@@ -102382,7 +102382,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have activated all of my strength.. I will rule!`);
+                return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
 }
@@ -102901,7 +102901,12 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
         inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout])
     }
     let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents)
-    return waited_device == correct_device
+    // console.log(waited_device)
+    if(inDeviceEvents.length <= 1){
+        return waited_device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"]
+    }else{
+        return waited_device == correct_device
+    }
 }
 
 // var color_to_button = {
@@ -102911,9 +102916,28 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
+class GameMatch{
+    constructor(instrction, deviceEvent, allDeviceEvents = []){
+        this.instrction = instrction
+        this.deviceEvent = deviceEvent
+        this.inDeviceEvents = allDeviceEvents
+        this.inDeviceEvents.push(deviceEvent)
+    }
+    async play(timeout){
+        pop_busy_dialog(this.instrction.text, false)
+
+        await this.instrction.play()
+        await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"])(150)
+
+        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
+    }
+}
+
 let welcomed = false
+var difficualty = 1;
 function reset_states(){
-    welcomed = false
+    welcomed = false;
+    difficualty = 1;
 }
 
 
@@ -102922,33 +102946,20 @@ async function ask_to_do_game(){
 
     let instrction 
     
-    let inDeviceEvents = [
+    let allInDeviceEvents = [
         [photo, 'press'], 
         [bend, 'press'], 
         [touch, 'press']
     ]
 
-    class GameMatch{
-        constructor(instrction, deviceEvent, allDeviceEvents = inDeviceEvents){
-            this.instrction = instrction
-            this.deviceEvent = deviceEvent
-            this.inDeviceEvents = allDeviceEvents
-        }
-        async play(timeout){
-            pop_busy_dialog(this.instrction.text, false)
-
-            this.instrction.play()
-            await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"])(20)
-
-            return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
-        }
-    }
+    let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
 
     let possible_game_matches = [
-        new GameMatch(talker.liftMe(), [photo, 'press']),
-        new GameMatch(talker.squeezeMe(), [bend, 'press']),
-        new GameMatch(talker.tapMe(), [touch, 'press'])
+        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents ),
+        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents)
     ]
+
 
     if(!welcomed){
         instrction = talker.welcomeChallenge()
@@ -102969,8 +102980,13 @@ async function ask_to_do_game(){
     let game ;
     let win ;
     let progress_speed = 0.5;
+    let initialDuration = 8000;
+    if( difficualty > 2 ){
+        progress_speed = 1;
+    }
+
     while (true) {
-        timeout = 8000/(progress_speed * round);
+        timeout = initialDuration/(progress_speed * round);
         game =  possible_game_matches.randomElement();
         win = await game.play(timeout);
         if(win){
@@ -102982,7 +102998,7 @@ async function ask_to_do_game(){
     }
     console.log(`Fianl timeout: ${timeout}`)
 
-    instrction = talker.made_round(round - 1)
+    instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
@@ -103092,6 +103108,17 @@ async function reason_question(question){
 
                 return talker.okey(`${new_langauge_literal} に換えました。`);
 
+            }else if(question.match(/難度|難し/i)){
+                if(question.match(/ハード|難しい/i)){
+                    difficualty = 3
+                }else if(question.match(/ノーマル|普通/i)){
+                    difficualty = 2
+                }else if(question.match(/イージー|簡単/i)){
+                    difficualty = 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/ゲム|ゲーム/i)){
                 await ask_to_do_game()
                 return ''
@@ -103144,10 +103171,24 @@ async function reason_question(question){
 
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
 
+            }else if(question.match(/difficulty|difficult|difficulter/i)){
+                if(question.match(/hard/i)){
+                    difficualty = 3
+                }else if(question.match(/normal/i)){
+                    difficualty = 2
+                }else if(question.match(/easy/i)){
+                    difficualty = 1
+                }else if(question.match(/easier/i)){
+                    difficualty -= 1
+                }else if(question.match(/harder|difficulter/i)){
+                    difficualty += 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/game/i)){
                 await ask_to_do_game()
                 return ''
-
             }else if(question.match(/reset/i)){
                 reset_states()
                 return talker.okey()

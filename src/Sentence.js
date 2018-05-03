@@ -195,7 +195,7 @@ export default class SentenceLibrary {
     welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`ゲム、スタート！`);
+                return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！我れ試さないてね〜`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -205,7 +205,9 @@ export default class SentenceLibrary {
             default:
                 return this.sentence(`
                     I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
-                    If you want to keep your life, you must comply with the following rules.`);
+                    If you want to keep your life, you must comply with the following rules.
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
     beginChallenge() {
@@ -219,9 +221,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`
-                    If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                return this.sentence(`Game Start!`);
         }
     }
     squeezeMe() {
@@ -406,10 +406,10 @@ export default class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
-    made_round(round) {
+    made_round(round, difficulty) {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`${round} 回を達成しました〜`);
+                return this.sentence(`難度 ${difficulty} に、 ${round} 回を達成しました〜`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
@@ -417,7 +417,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have completed ${round} rounds!`);
+                return this.sentence(`You have completed ${round} rounds on level ${difficulty}!`);
         }
     }
     successComply() {
@@ -431,7 +431,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have activated all of my strength.. I will rule!`);
+                return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
 }
