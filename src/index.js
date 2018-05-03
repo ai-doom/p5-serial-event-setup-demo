@@ -366,7 +366,7 @@ async function ask_to_do_game(){
     }
     console.log(`Fianl timeout: ${timeout}`)
 
-    instrction = talker.made_round(round - 1)
+    instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
