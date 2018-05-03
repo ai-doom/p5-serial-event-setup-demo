@@ -24,7 +24,7 @@ let tilt_2 = new Button(1, 1);
 let bgMusic = new Howl({
     src: ['UNIVOX8.WAV'],
     loop: true,
-    volume: 0.5
+    volume: 0.4
 });
 
 let devices = [new TimeAnalysizer(), force, bend, photo, touch, tilt_1, tilt_2]
@@ -54,9 +54,6 @@ bend.on('press', ()=>{
 photo.on('press', ()=>{
     console.log('press','photo')
 })
-// photo.on('tick', (e)=>{
-//     console.log('photo',e)
-// })
 tilt_1.on('press', ()=>{
     console.log('press','tilt_1')
 })
@@ -295,7 +292,7 @@ class GameMatch{
         pop_busy_dialog(this.instrction.text, false)
 
         await this.instrction.play()
-        await wait(150)
+        await wait(50)
 
         return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
     }
@@ -336,6 +333,17 @@ async function ask_to_do_game(){
         welcomed = true;
     }
 
+
+    let siri_question = talker.askForName();
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
+
+    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+
+    siri_question = talker.okey_play(name);
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
+    
     bgMusic.play();
 
     instrction = talker.beginChallenge()
@@ -356,7 +364,8 @@ async function ask_to_do_game(){
     while (true) {
         timeout = initialDuration/(progress_speed * round);
 
-        instrction = talker.have_seconds(timeout)
+        instrction = talker.have_seconds(timeout, round)
+        pop_busy_dialog(instrction.text, false)
         await instrction.play()
 
         for (let index = 0; index < 6; index++) {
@@ -370,6 +379,8 @@ async function ask_to_do_game(){
         if(!win){
             break
         }
+
+        bgMusic.rate(1 + (0.1 * round) )
 
         round += 1
     }

@@ -92,6 +92,21 @@ export default class SentenceLibrary {
                 return this.sentence(`Hi, ${name}, What can I do for you?`);
         }
     }
+    okey_play(name){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`こんにちは、${name}さん、どうがしましたが？`);
+
+            case 'es-es':
+                return this.sentence(`Hola, ${name}, que tal?`);
+
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`OK, ${name}, Let's play`);
+        }
+    }
     greetings() {
         switch (this.lang) {
             case 'ja-jp':
@@ -434,11 +449,11 @@ export default class SentenceLibrary {
                 return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
-    have_seconds(milisencond){
-        let seconds = math.floor(milisencond/1000)
+    have_seconds(milisencond, round){
+        let seconds = Math.floor(milisencond/1000)
         switch (this.lang) {
             case 'ja-jp':
-                
+            return this.sentence(`一回　${seconds} 秒よ〜`);
 
             case 'es-es':
                 
@@ -446,7 +461,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have ${seconds} senconds.`);
+                return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
         }
     }
 }
