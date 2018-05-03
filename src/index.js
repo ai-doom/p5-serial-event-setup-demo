@@ -4,7 +4,7 @@ import {Howl, Howler} from 'howler'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
-import {TimeAnalysizer, Button, ThresholdedSensor, Light, InputDevice} from './Device.js'
+import {TimeAnalysizer, Button, ThresholdedSensor, Light, InputDevice, CapasitiveSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
@@ -15,8 +15,8 @@ import { release } from "os";
 
 let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
-let photo = new ThresholdedSensor(10);
-let touch = new ThresholdedSensor(20000);
+let photo = new ThresholdedSensor(0);
+let touch = new CapasitiveSensor(20000);
 
 let tilt_1 = new Button(0, 0);
 let tilt_2 = new Button(1, 1);
@@ -24,6 +24,16 @@ let tilt_2 = new Button(1, 1);
 let bgMusic = new Howl({
     src: ['UNIVOX8.WAV'],
     loop: true,
+    volume: 0.4
+});
+
+let positiveSound = new Howl({
+    src: ['positive.wav'],
+    volume: 0.5
+});
+
+let negativeSound = new Howl({
+    src: ['negative.wav'],
     volume: 0.5
 });
 
@@ -40,6 +50,13 @@ board.connect({baudrate: 9600});
 // board.on('point', point => {
 //     console.log(`point`, point)
 // });
+
+// photo.on('tick', (e)=>{
+//     console.log('photo',e)
+// })
+// bend.on('tick', (e)=>{
+//     console.log('bend',e)
+// })
 
 force.on('press', ()=>{
     console.log('press','force')
@@ -117,9 +134,26 @@ function listen_new_conversation(){
     conversation_listener.once('press', async (tuple) =>{
         let [siriButton, e] = tuple
         if(siriButton){
-            siriButton.once('release', TextSpeech.mic_stop)
-            await pressAsk()
-            listen_new_conversation()
+            let quick_released = false;
+            let quick_release = async () => {
+                quick_released = true
+
+                // siriButton.once('release', TextSpeech.mic_stop)
+
+                await pressAsk(true)
+                listen_new_conversation()
+            }
+            siriButton.once('release', quick_release)
+            await siri.start();
+            light.cyan()
+
+            if(!quick_released){
+                siriButton.off('release', quick_release)
+                siriButton.once('release', TextSpeech.mic_stop)
+            
+                await pressAsk()
+                listen_new_conversation()
+            }
         }else{
             if(e.key == 'n'){
                 await new_conversation();
@@ -197,9 +231,20 @@ async function pop_busy_dialog(title, cancelable = true, text = ''){
     })
 }
 
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ */
 function setup_device_for_value_connection(device){
     device.values_collcetion = []
 }
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ * @param {number} value 
+ */
 function collect_device_values(device, value){
     device.values_collcetion.push(value)
 }
@@ -209,6 +254,17 @@ const listen_on_tick = (device)=>{
     device.on('tick', collect_event);
     return collect_event
 }
+/**
+ * 
+ * 
+ * @param {ThresholdedSensor} device 
+ * @param {number} factor 
+ */
+const set_device_value = (device, factor) => {
+    device.reset(device.values_collcetion, factor)
+    return device.threshold;
+}
+
 
 const deviceEvent = (device, event) => [device, event]
 
@@ -227,7 +283,12 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
         inDeviceEvents.push([wait, timeout])
     }
     let [waited_device, waited_event] = await wait_race(inDeviceEvents)
-    return waited_device == correct_device
+    // console.log(waited_device)
+    if(inDeviceEvents.length <= 1){
+        return waited_device !== wait || waited_device == correct_device
+    }else{
+        return waited_device == correct_device
+    }
 }
 
 // var color_to_button = {
@@ -237,18 +298,53 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
-let welcomed = false
+class GameMatch{
+    constructor(instrction, deviceEvent, allDeviceEvents = []){
+        this.instrction = instrction
+        this.deviceEvent = deviceEvent
+        this.inDeviceEvents = allDeviceEvents
+        this.inDeviceEvents.push(deviceEvent)
+    }
+    async play(timeout){
+        pop_busy_dialog(this.instrction.text, false)
+
+        let start = new Date()
+        await this.instrction.play()
+        let end = new Date()
+        console.log('instruction elaspe', start - end)
+
+        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
+    }
+}
+
+let welcomed = true
+var difficualty = 1;
+function reset_states(){
+    welcomed = false;
+    difficualty = 1;
+}
+
 
 async function ask_to_do_game(){
     let talker = new Talker(language);
 
     let instrction 
-
-    let inDeviceEvents = [
+    
+    let allInDeviceEvents = [
         [photo, 'press'], 
         [bend, 'press'], 
         [touch, 'press']
     ]
+
+    let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
+
+    let possible_game_matches = [
+        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents.slice() ),
+        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents.slice()),
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents.slice()),
+        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents.slice())
+    ]
+
 
     if(!welcomed){
         instrction = talker.welcomeChallenge()
@@ -257,6 +353,17 @@ async function ask_to_do_game(){
         welcomed = true;
     }
 
+
+    let siri_question = talker.askForName();
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
+
+    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+
+    siri_question = talker.okey_play(name);
+    pop_busy_dialog(siri_question.text, false);
+    await siri_question.play();
+    
     bgMusic.play();
 
     instrction = talker.beginChallenge()
@@ -264,68 +371,66 @@ async function ask_to_do_game(){
     await instrction.play()
     
     //  trail
+    let round = 1;
+    let timeout;
+    let game ;
+    let win ;
+    let progress_speed = 0.5;
+    let initialDuration = 8000;
+    if( difficualty > 2 ){
+        progress_speed = 1;
+    }
 
-    instrction = talker.liftMe()
+    while (true) {
+        timeout = initialDuration/(progress_speed * round);
+
+        instrction = talker.have_seconds(timeout, round)
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+
+        for (let index = 0; index < 6; index++) {
+            game =  possible_game_matches.randomElement();
+            win = await game.play(timeout);
+            if(win){
+                positiveSound.play()
+            }else{
+                negativeSound.play()
+            }
+            if(!win){
+                break
+            }
+        }
+
+        if(!win){
+            break
+        }
+
+        bgMusic.rate(1 + (0.1 * round) )
+
+        round += 1
+    }
+
+    console.log(`Fianl timeout: ${timeout}`)
+    if (round > 3){
+        difficualty += 1
+        instrction = talker.difficulty_upgraded()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
+    } 
+
+    instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
-    // 
-    if(!await wait_until_some_device([photo, 'press'], inDeviceEvents, 4000)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-
-    instrction = talker.squeezeMe()
-    await instrction.play()
-
-    // 
-    if(!await wait_until_some_device([bend, 'press'], inDeviceEvents, 4000)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-
-    // TODO: Game:
-
-    // let buttons = [button1, button2, button3]
-    // instrction = talker.pressButton()
-    // await instrction.play()
-
-    // let color 
-    // let button
-
-    // color= possible_buttons.randomElement();
-    // button = color_to_button[color]
-    // instrction = talker.buttonName(color)
-    // instrction.play()
-    // if(!await wait_until_some_device(button, 'press', buttons)){
-    //     instrction = talker.failComply()
-    //     pop_busy_dialog(instrction.text, false)
-    //     await instrction.play()
-    //     return bgMusic.stop();
-    // }
-    
-
-    
-
-
-
     instrction = talker.successComply()
+    pop_busy_dialog(instrction.text, false)
     await instrction.play()
-
-    // TODO: Sample
     
     bgMusic.stop();
 }
 
-async function pressAsk(){
-    await siri.start();
-    light.cyan()
-
-    let question = await askWithDialog('', false);
+async function pressAsk(autoStop = false){
+    let question = await askWithDialog('', autoStop);
 
     if(question){
         siri.done()
@@ -423,6 +528,17 @@ async function reason_question(question){
 
                 return talker.okey(`${new_langauge_literal} に換えました。`);
 
+            }else if(question.match(/難度|難し/i)){
+                if(question.match(/ハード|難しい/i)){
+                    difficualty = 3
+                }else if(question.match(/ノーマル|普通/i)){
+                    difficualty = 2
+                }else if(question.match(/イージー|簡単/i)){
+                    difficualty = 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/ゲム|ゲーム/i)){
                 await ask_to_do_game()
                 return ''
@@ -475,10 +591,27 @@ async function reason_question(question){
 
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
 
+            }else if(question.match(/difficulty|difficult|difficulter/i)){
+                if(question.match(/hard/i)){
+                    difficualty = 3
+                }else if(question.match(/normal/i)){
+                    difficualty = 2
+                }else if(question.match(/easy/i)){
+                    difficualty = 1
+                }else if(question.match(/easier/i)){
+                    difficualty -= 1
+                }else if(question.match(/harder|difficulter/i)){
+                    difficualty += 1
+                }else{
+                    return talker.unsure();
+                }
+                return talker.okey()
             }else if(question.match(/game/i)){
                 await ask_to_do_game()
                 return ''
-
+            }else if(question.match(/reset/i)){
+                reset_states()
+                return talker.okey()
             }else if(question.match(/hi|hello|how are you/i)){
                 return talker.greetings()
             }else{

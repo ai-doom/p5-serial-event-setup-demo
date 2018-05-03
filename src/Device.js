@@ -72,8 +72,25 @@ class ThresholdedSensor extends InputDevice{
 
 export 
 class CapasitiveSensor extends ThresholdedSensor{
+
     reset(values){
         return super.reset(values, 10)
+    }
+
+    tick(value){
+        this.emit("tick", value);
+        let over  = value > this.threshold || value < 0;
+        
+        if(this.state != over){
+            if(over == true){
+                this.emit("press", this);
+            }else{
+                this.emit("release", this);
+            }
+            this.state = over;
+        }
+        let relativeValue = value/this.mean;
+        this.value = relativeValue;
     }
 }
 

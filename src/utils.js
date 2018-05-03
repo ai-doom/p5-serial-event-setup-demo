@@ -17,7 +17,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
  */
 export const wait_race = (device_events) => Promise.race(
     device_events.map(
-        async (device, event) => {
+        async ([device, event]) => {
             let result
             if(device === wait){
                 await wait(event)

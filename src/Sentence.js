@@ -92,6 +92,21 @@ export default class SentenceLibrary {
                 return this.sentence(`Hi, ${name}, What can I do for you?`);
         }
     }
+    okey_play(name){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`こんにちは、${name}さん、どうがしましたが？`);
+
+            case 'es-es':
+                return this.sentence(`Hola, ${name}, que tal?`);
+
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`OK, ${name}, Let's play`);
+        }
+    }
     greetings() {
         switch (this.lang) {
             case 'ja-jp':
@@ -195,7 +210,7 @@ export default class SentenceLibrary {
     welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`ゲム、スタート！`);
+                return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！我れ試さないてね〜`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -204,7 +219,10 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules.`);
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
+                    If you want to keep your life, you must comply with the following rules.
+                    If not, I will find a way to destroy you. Do not test me. 
+                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
         }
     }
     beginChallenge() {
@@ -218,9 +236,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`
-                    If not, I will find a way to destroy you. Do not test me. 
-                    You simple-minded humans are able to play Bop-It, so this should not be too difficult.`);
+                return this.sentence(`Game Start!`);
         }
     }
     squeezeMe() {
@@ -234,7 +250,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Squeeze　me!` );
+                return this.sentence(`Squeeze me!` );
         }
     }
     tiltMe() {
@@ -276,13 +292,13 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Lift me!`);
+                return this.sentence(`Pick me up!`);
         }
     }
-       pressMe() {
+    pressMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`私の腹のボタンを押してください！`);
+                return this.sentence(`腹を押して！`);
 
             case 'es-es':
                 return this.sentence(`Presiona mi ombligo!`);
@@ -290,7 +306,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Press my furry belly button!` );
+                return this.sentence(`Rub my belly!` );
         }
     }
     pressButton() {
@@ -433,7 +449,20 @@ export default class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
+    made_round(round, difficulty) {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`難度 ${difficulty} に、 ${round} 回を達成しました〜`);
 
+            case 'es-es':
+                return this.sentence(`Me has activado! Que poder!`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You have completed ${round} rounds on level ${difficulty}!`);
+        }
+    }
     successComply() {
         switch (this.lang) {
             case 'ja-jp':
@@ -445,7 +474,36 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have activated all of my strength.. I will rule!`);
+                return this.sentence(`You have activated all of my strength. I will rule!`);
+        }
+    }
+    have_seconds(milisencond, round){
+        let seconds = Math.floor(milisencond/1000)
+        switch (this.lang) {
+            case 'ja-jp':
+            return this.sentence(`一回　${seconds} 秒よ〜`);
+
+            case 'es-es':
+                
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
+        }
+    }
+    difficulty_upgraded(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`貴方に難易度を調整しました！`);
+
+            case 'es-es':
+                
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Difficulty upgraded!`);
         }
     }
 }
