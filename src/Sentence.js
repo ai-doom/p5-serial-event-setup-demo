@@ -385,7 +385,7 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Has completado el primer grupo de pruebas. ¿Es suerte o habilidad? Vamos a ver.`);
 
             case 'en-us':
             case 'en-gb':
@@ -399,7 +399,8 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`
+Si piensas que eso es todo lo que voy a pedirte, seguramente estás equivocado. Proceda campesino.`);
 
             case 'en-us':
             case 'en-gb':
@@ -413,7 +414,7 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Bueno. Entonces estás listo para un desafío. Veamos cuánto puedes manejar.`);
 
             case 'en-us':
             case 'en-gb':
@@ -427,7 +428,7 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Siento que mi poder está creciendo. ¡Sí! ¡Sí! ¡Sí!`);
 
             case 'en-us':
             case 'en-gb':
@@ -441,7 +442,7 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Escucha todos mis comandos. Dame más poder!`);
 
             case 'en-us':
             case 'en-gb':
