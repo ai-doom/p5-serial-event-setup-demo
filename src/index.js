@@ -121,9 +121,9 @@ function listen_new_conversation(){
             let quick_release = async () => {
                 quick_released = true
 
-                siriButton.once('release', TextSpeech.mic_stop)
+                // siriButton.once('release', TextSpeech.mic_stop)
 
-                await pressAsk()
+                await pressAsk(true)
                 listen_new_conversation()
             }
             siriButton.once('release', quick_release)
@@ -360,8 +360,8 @@ async function ask_to_do_game(){
     bgMusic.stop();
 }
 
-async function pressAsk(){
-    let question = await askWithDialog('', false);
+async function pressAsk(autoStop = false){
+    let question = await askWithDialog('', autoStop);
 
     if(question){
         siri.done()
