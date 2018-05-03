@@ -405,7 +405,20 @@ export default class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
+    made_round(round) {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`${round} 回を達成しました〜`);
 
+            case 'es-es':
+                return this.sentence(`Me has activado! Que poder!`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`You made ${round} rounds!`);
+        }
+    }
     successComply() {
         switch (this.lang) {
             case 'ja-jp':

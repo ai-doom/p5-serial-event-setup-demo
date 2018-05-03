@@ -277,16 +277,42 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
 // var possible_buttons = ['white', 'red', 'blue']
 
 let welcomed = false
+function reset_states(){
+    welcomed = false
+}
+
 
 async function ask_to_do_game(){
     let talker = new Talker(language);
 
     let instrction 
-
+    
     let inDeviceEvents = [
         [photo, 'press'], 
         [bend, 'press'], 
         [touch, 'press']
+    ]
+
+    class GameMatch{
+        constructor(instrction, deviceEvent, allDeviceEvents = inDeviceEvents){
+            this.instrction = instrction
+            this.deviceEvent = deviceEvent
+            this.inDeviceEvents = allDeviceEvents
+        }
+        async play(timeout){
+            pop_busy_dialog(this.instrction.text, false)
+
+            instrction.play()
+            await wait(20)
+
+            return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
+        }
+    }
+
+    let possible_game_matches = [
+        new GameMatch(talker.liftMe(), [photo, 'press']),
+        new GameMatch(talker.squeezeMe(), [bend, 'press']),
+        new GameMatch(talker.tapMe(), [touch, 'press'])
     ]
 
     if(!welcomed){
@@ -303,59 +329,29 @@ async function ask_to_do_game(){
     await instrction.play()
     
     //  trail
+    let round = 1;
+    let timeout;
+    let game ;
+    let win ;
+    while (true) {
+        timeout = 8000/round;
+        game =  possible_game_matches.randomElement();
+        win = await game.play(timeout);
+        if(win){
+            round += 1;
+            
+        }else{
+            break
+        }
+    }
 
-    instrction = talker.liftMe()
+    instrction = talker.made_round(round)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
-    // 
-    if(!await wait_until_some_device([photo, 'press'], inDeviceEvents, 4000)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-
-    instrction = talker.squeezeMe()
-    await instrction.play()
-
-    // 
-    if(!await wait_until_some_device([bend, 'press'], inDeviceEvents, 4000)){
-        instrction = talker.failComply()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
-        return bgMusic.stop();
-    }
-
-    // TODO: Game:
-
-    // let buttons = [button1, button2, button3]
-    // instrction = talker.pressButton()
-    // await instrction.play()
-
-    // let color 
-    // let button
-
-    // color= possible_buttons.randomElement();
-    // button = color_to_button[color]
-    // instrction = talker.buttonName(color)
-    // instrction.play()
-    // if(!await wait_until_some_device(button, 'press', buttons)){
-    //     instrction = talker.failComply()
-    //     pop_busy_dialog(instrction.text, false)
-    //     await instrction.play()
-    //     return bgMusic.stop();
-    // }
-    
-
-    
-
-
-
     instrction = talker.successComply()
+    pop_busy_dialog(instrction.text, false)
     await instrction.play()
-
-    // TODO: Sample
     
     bgMusic.stop();
 }
@@ -515,6 +511,9 @@ async function reason_question(question){
                 await ask_to_do_game()
                 return ''
 
+            }else if(question.match(/reset/i)){
+                reset_states()
+                return talker.okey()
             }else if(question.match(/hi|hello|how are you/i)){
                 return talker.greetings()
             }else{
