@@ -4,7 +4,7 @@ import {Howl, Howler} from 'howler'
 import swal from 'sweetalert'
 
 import {Board} from './Arduino.js'
-import {TimeAnalysizer, Button, ThresholdedSensor, Light, InputDevice} from './Device.js'
+import {TimeAnalysizer, Button, ThresholdedSensor, Light, InputDevice, CapasitiveSensor} from './Device.js'
 import {Keybaord} from './Keyboard.js'
 import * as TextSpeech from './TextSpeech.js'
 import Siri from './Siri.js'
@@ -15,8 +15,8 @@ import { release } from "os";
 
 let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
-let photo = new ThresholdedSensor(10);
-let touch = new ThresholdedSensor(20000);
+let photo = new ThresholdedSensor(3);
+let touch = new CapasitiveSensor(20000);
 
 let tilt_1 = new Button(0, 0);
 let tilt_2 = new Button(1, 1);
@@ -302,7 +302,7 @@ async function ask_to_do_game(){
         async play(timeout){
             pop_busy_dialog(this.instrction.text, false)
 
-            instrction.play()
+            this.instrction.play()
             await wait(20)
 
             return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
@@ -333,8 +333,9 @@ async function ask_to_do_game(){
     let timeout;
     let game ;
     let win ;
+    let progress_speed = 0.5;
     while (true) {
-        timeout = 8000/round;
+        timeout = 8000/progress_speed * round;
         game =  possible_game_matches.randomElement();
         win = await game.play(timeout);
         if(win){
@@ -344,8 +345,9 @@ async function ask_to_do_game(){
             break
         }
     }
-
-    instrction = talker.made_round(round)
+    console.log(`Fianl timeout: ${timeout}`)
+    
+    instrction = talker.made_round(round - 1)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
@@ -419,7 +421,7 @@ async function askWithDialog(title, autoStop=true){
     return result;
 }
 
-var language = 'en-gb';
+var language = 'en-us';
 
 async function responseToQuestion(question){
     let answer = await reason_question(question);

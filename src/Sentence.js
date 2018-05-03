@@ -204,7 +204,8 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules.`);
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
+                    If you want to keep your life, you must comply with the following rules.`);
         }
     }
     beginChallenge() {
@@ -234,7 +235,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Squeeze　me!` );
+                return this.sentence(`Squeeze me!` );
         }
     }
     tiltMe() {
@@ -416,7 +417,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You made ${round} rounds!`);
+                return this.sentence(`You have completed ${round} rounds!`);
         }
     }
     successComply() {

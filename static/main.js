@@ -101806,8 +101806,25 @@ class ThresholdedSensor extends InputDevice{
 }
 
 class CapasitiveSensor extends ThresholdedSensor{
+
     reset(values){
         return super.reset(values, 10)
+    }
+
+    tick(value){
+        this.emit("tick", value);
+        let over  = value > this.threshold || value < 0;
+        
+        if(this.state != over){
+            if(over == true){
+                this.emit("press", this);
+            }else{
+                this.emit("release", this);
+            }
+            this.state = over;
+        }
+        let relativeValue = value/this.mean;
+        this.value = relativeValue;
     }
 }
 
@@ -102138,7 +102155,8 @@ class SentenceLibrary {
             case 'en-gb':
             default:
                 return this.sentence(`
-                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. If you want to keep your life, you must comply with the following rules.`);
+                    I am an artificially intelligent agent that is part of the league of AI bots that is taking over the world. 
+                    If you want to keep your life, you must comply with the following rules.`);
         }
     }
     beginChallenge() {
@@ -102168,7 +102186,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Squeeze　me!` );
+                return this.sentence(`Squeeze me!` );
         }
     }
     tiltMe() {
@@ -102350,7 +102368,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You made ${round} rounds!`);
+                return this.sentence(`You have completed ${round} rounds!`);
         }
     }
     successComply() {
@@ -102629,8 +102647,8 @@ __webpack_require__.r(__webpack_exports__);
 
 let force = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](12);
 let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](360);
-let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](10);
-let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](20000);
+let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](3);
+let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["CapasitiveSensor"](20000);
 
 let tilt_1 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](0, 0);
 let tilt_2 = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["Button"](1, 1);
@@ -102916,7 +102934,7 @@ async function ask_to_do_game(){
         async play(timeout){
             pop_busy_dialog(this.instrction.text, false)
 
-            instrction.play()
+            this.instrction.play()
             await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"])(20)
 
             return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
@@ -102947,8 +102965,9 @@ async function ask_to_do_game(){
     let timeout;
     let game ;
     let win ;
+    let progress_speed = 0.5;
     while (true) {
-        timeout = 8000/round;
+        timeout = 8000/progress_speed * round;
         game =  possible_game_matches.randomElement();
         win = await game.play(timeout);
         if(win){
@@ -102958,8 +102977,9 @@ async function ask_to_do_game(){
             break
         }
     }
-
-    instrction = talker.made_round(round)
+    console.log(`Fianl timeout: ${timeout}`)
+    
+    instrction = talker.made_round(round - 1)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
 
@@ -103033,7 +103053,7 @@ async function askWithDialog(title, autoStop=true){
     return result;
 }
 
-var language = 'en-gb';
+var language = 'en-us';
 
 async function responseToQuestion(question){
     let answer = await reason_question(question);
