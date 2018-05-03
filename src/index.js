@@ -54,6 +54,9 @@ bend.on('press', ()=>{
 photo.on('press', ()=>{
     console.log('press','photo')
 })
+// photo.on('tick', (e)=>{
+//     console.log('photo',e)
+// })
 tilt_1.on('press', ()=>{
     console.log('press','tilt_1')
 })
@@ -335,7 +338,7 @@ async function ask_to_do_game(){
     let win ;
     let progress_speed = 0.5;
     while (true) {
-        timeout = 8000/progress_speed * round;
+        timeout = 8000/(progress_speed * round);
         game =  possible_game_matches.randomElement();
         win = await game.play(timeout);
         if(win){
@@ -346,7 +349,7 @@ async function ask_to_do_game(){
         }
     }
     console.log(`Fianl timeout: ${timeout}`)
-    
+
     instrction = talker.made_round(round - 1)
     pop_busy_dialog(instrction.text, false)
     await instrction.play()
