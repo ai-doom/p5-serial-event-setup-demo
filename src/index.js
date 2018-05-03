@@ -15,7 +15,7 @@ import { release } from "os";
 
 let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
-let photo = new ThresholdedSensor(3);
+let photo = new ThresholdedSensor(0);
 let touch = new CapasitiveSensor(20000);
 
 let tilt_1 = new Button(0, 0);
@@ -301,7 +301,7 @@ class GameMatch{
     }
 }
 
-let welcomed = false
+let welcomed = true
 var difficualty = 1;
 function reset_states(){
     welcomed = false;
@@ -364,6 +364,9 @@ async function ask_to_do_game(){
             break
         }
     }
+    if (round > 3){
+        difficualty += 1
+    } 
     console.log(`Fianl timeout: ${timeout}`)
 
     instrction = talker.made_round(round - 1, difficualty)
