@@ -27,6 +27,16 @@ let bgMusic = new Howl({
     volume: 0.4
 });
 
+let positiveSound = new Howl({
+    src: ['positive.wav'],
+    volume: 0.5
+});
+
+let negativeSound = new Howl({
+    src: ['negative.wav'],
+    volume: 0.5
+});
+
 let devices = [new TimeAnalysizer(), force, bend, photo, touch, tilt_1, tilt_2]
 const board = new Board(devices);
 board.connect({baudrate: 9600});
