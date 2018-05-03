@@ -44,9 +44,9 @@ board.connect({baudrate: 9600});
 // photo.on('tick', (e)=>{
 //     console.log('photo',e)
 // })
-bend.on('tick', (e)=>{
-    console.log('bend',e)
-})
+// bend.on('tick', (e)=>{
+//     console.log('bend',e)
+// })
 
 force.on('press', ()=>{
     console.log('press','force')
@@ -298,8 +298,10 @@ class GameMatch{
     async play(timeout){
         pop_busy_dialog(this.instrction.text, false)
 
+        let start = new Date()
         await this.instrction.play()
-        await wait(50)
+        let end = new Date()
+        console.log('instruction elaspe', start - end)
 
         return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
     }
@@ -329,7 +331,8 @@ async function ask_to_do_game(){
     let possible_game_matches = [
         new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents ),
         new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
-        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents)
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents),
+        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents)
     ]
 
 

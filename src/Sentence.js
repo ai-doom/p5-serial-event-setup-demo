@@ -295,10 +295,10 @@ export default class SentenceLibrary {
                 return this.sentence(`Lift me!`);
         }
     }
-       pressMe() {
+    pressMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`私の腹のボタンを押してください！`);
+                return this.sentence(`腹を押して！`);
 
             case 'es-es':
                 return this.sentence(`Presiona mi ombligo!`);
@@ -306,7 +306,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Press my furry belly button!` );
+                return this.sentence(`Rub my belly!` );
         }
     }
     pressButton() {
