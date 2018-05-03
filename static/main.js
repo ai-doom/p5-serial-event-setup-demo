@@ -102243,7 +102243,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Lift me!`);
+                return this.sentence(`Pick me up!`);
         }
     }
     pressMe() {
@@ -102937,7 +102937,7 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
     let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents)
     // console.log(waited_device)
     if(inDeviceEvents.length <= 1){
-        return waited_device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"]
+        return waited_device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"] || waited_device == correct_device
     }else{
         return waited_device == correct_device
     }
@@ -102991,10 +102991,10 @@ async function ask_to_do_game(){
     let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
 
     let possible_game_matches = [
-        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents ),
-        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
-        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents),
-        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents)
+        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents.slice() ),
+        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents.slice()),
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents.slice()),
+        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents.slice())
     ]
 
 

@@ -292,7 +292,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Lift me!`);
+                return this.sentence(`Pick me up!`);
         }
     }
     pressMe() {
