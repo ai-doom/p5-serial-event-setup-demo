@@ -102901,7 +102901,8 @@ const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
         inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout])
     }
     let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents)
-    return waited_device == correct_device
+    // console.log(waited_device)
+    return waited_device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"]
 }
 
 // var color_to_button = {
@@ -102923,9 +102924,9 @@ async function ask_to_do_game(){
     let instrction 
     
     let inDeviceEvents = [
-        [photo, 'press'], 
-        [bend, 'press'], 
-        [touch, 'press']
+        // [photo, 'press'], 
+        // [bend, 'press'], 
+        // [touch, 'press']
     ]
 
     class GameMatch{
@@ -102933,12 +102934,13 @@ async function ask_to_do_game(){
             this.instrction = instrction
             this.deviceEvent = deviceEvent
             this.inDeviceEvents = allDeviceEvents
+            this.inDeviceEvents.push(deviceEvent)
         }
         async play(timeout){
             pop_busy_dialog(this.instrction.text, false)
 
-            this.instrction.play()
-            await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"])(20)
+            await this.instrction.play()
+            // await wait(20)
 
             return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
         }
