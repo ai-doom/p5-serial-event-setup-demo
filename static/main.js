@@ -102415,6 +102415,20 @@ class SentenceLibrary {
                 return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
         }
     }
+    difficulty_upgraded(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`貴方に難易度を調整しました！`);
+
+            case 'es-es':
+                
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Difficulty upgraded!`);
+        }
+    }
 }
 
 Array.prototype.randomElement = function () {
@@ -103071,10 +103085,14 @@ async function ask_to_do_game(){
 
         round += 1
     }
+
+    console.log(`Fianl timeout: ${timeout}`)
     if (round > 3){
         difficualty += 1
+        instrction = talker.difficulty_upgraded()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
     } 
-    console.log(`Fianl timeout: ${timeout}`)
 
     instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)

@@ -464,6 +464,20 @@ export default class SentenceLibrary {
                 return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
         }
     }
+    difficulty_upgraded(){
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(`貴方に難易度を調整しました！`);
+
+            case 'es-es':
+                
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`Difficulty upgraded!`);
+        }
+    }
 }
 
 Array.prototype.randomElement = function () {

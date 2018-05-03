@@ -409,10 +409,14 @@ async function ask_to_do_game(){
 
         round += 1
     }
+
+    console.log(`Fianl timeout: ${timeout}`)
     if (round > 3){
         difficualty += 1
+        instrction = talker.difficulty_upgraded()
+        pop_busy_dialog(instrction.text, false)
+        await instrction.play()
     } 
-    console.log(`Fianl timeout: ${timeout}`)
 
     instrction = talker.made_round(round - 1, difficualty)
     pop_busy_dialog(instrction.text, false)
