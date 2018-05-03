@@ -41,6 +41,13 @@ board.connect({baudrate: 9600});
 //     console.log(`point`, point)
 // });
 
+// photo.on('tick', (e)=>{
+//     console.log('photo',e)
+// })
+bend.on('tick', (e)=>{
+    console.log('bend',e)
+})
+
 force.on('press', ()=>{
     console.log('press','force')
 })
