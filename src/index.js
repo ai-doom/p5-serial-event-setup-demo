@@ -72,12 +72,12 @@ bend.on('press', ()=>{
 photo.on('press', ()=>{
     console.log('press','photo')
 })
-tilt_1.on('press', ()=>{
-    console.log('press','tilt_1')
-})
-tilt_2.on('press', ()=>{
-    console.log('press','tilt_2')
-})
+// tilt_1.on('press', ()=>{
+//     console.log('press','tilt_1')
+// })
+// tilt_2.on('press', ()=>{
+//     console.log('press','tilt_2')
+// })
 
 TextSpeech.getAuthorizations()
 
