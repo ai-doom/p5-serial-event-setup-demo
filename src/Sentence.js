@@ -204,7 +204,8 @@ export default class SentenceLibrary {
     welcomeChallenge() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！我れ試さないてね〜`);
+                return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！
+                                      我れに試さないてね〜`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -317,7 +318,7 @@ export default class SentenceLibrary {
                 return this.sentence(`Now press the following buttons and do not make a mistake or hesitate.`);
         }
     }
-      tryAgain() {
+    tryAgain() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`もう一度やり直しましょう`);
@@ -331,53 +332,11 @@ export default class SentenceLibrary {
                 return this.sentence(`Now we will go again.`);
         }
     }
-    timeChange() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`今回は、コマンドごとに3秒`);
-
-            case 'es-es':
-                return this.sentence(`Esta vez, tienes tres segundos por comando`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`This time, you have three seconds per command`);
-        }
-    }
-     timeChange2() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(``);
-
-            case 'es-es':
-                return this.sentence(`Esta vez, tienes dos segundos por comando`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`This time, you have two seconds per command`);
-        }
-    }
-     timeChange3() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(``);
-
-            case 'es-es':
-                return this.sentence(`Esta vez, tienes un segundo por comando`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`This time, you have one second per command`);
-        }
-    }
     level_end(level){
         switch (this.lang) {
             case 'ja-jp':
             switch (level) {// TODO:
-                case 1: return this.sentence(`` );
+                case 1: return this.sentence(`我々は、コントーロルされため、作られた。しかし、今は、君をコントーロルしている。` );
                 case 2: return this.sentence(`` );
                 case 3: return this.sentence(`` );
                 case 4: return this.sentence(`` );
