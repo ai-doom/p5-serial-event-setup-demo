@@ -12,6 +12,7 @@ import Talker , {Sentence} from './Sentence.js'
 import {wait, wait_until, wait_race} from './utils.js'
 import { EventEmitter2 } from "eventemitter2";
 import { release } from "os";
+import {GameMatch} from './Game.js'
 
 let force = new ThresholdedSensor(12);
 let bend  = new ThresholdedSensor(360);
@@ -265,58 +266,6 @@ const set_device_value = (device, factor) => {
     return device.threshold;
 }
 
-
-const deviceEvent = (device, event) => [device, event]
-
-
-/**
- * 
- * 
- * @param {[InputDevice, string]} deviceEvent 
- * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
- * @param {number} timeout 
- * @returns {boolean} if the correct device is activated
- */
-const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
-    let [correct_device, _] = deviceEvent
-    if(timeout){
-        inDeviceEvents.push([wait, timeout])
-    }
-    let [waited_device, waited_event] = await wait_race(inDeviceEvents)
-    // console.log(waited_device)
-    if(inDeviceEvents.length <= 1){
-        return waited_device !== wait || waited_device == correct_device
-    }else{
-        return waited_device == correct_device
-    }
-}
-
-// var color_to_button = {
-//     'white': button3,
-//     'red': button2,
-//     'blue': button1,
-// }
-// var possible_buttons = ['white', 'red', 'blue']
-
-class GameMatch{
-    constructor(instrction, deviceEvent, allDeviceEvents = []){
-        this.instrction = instrction
-        this.deviceEvent = deviceEvent
-        this.inDeviceEvents = allDeviceEvents
-        this.inDeviceEvents.push(deviceEvent)
-    }
-    async play(timeout){
-        pop_busy_dialog(this.instrction.text, false)
-
-        let start = new Date()
-        await this.instrction.play()
-        let end = new Date()
-        console.log('instruction elaspe', start - end)
-
-        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
-    }
-}
-
 let welcomed = false
 var difficualty = 1;
 function reset_states(){
@@ -342,15 +291,16 @@ async function ask_to_do_game(){
         [touch, 'press']
     ]
 
-    let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
+    let is_device_sensitive = difficualty > 1;
+
+    let inDeviceEvents = is_device_sensitive ? allInDeviceEvents : [];
 
     let possible_game_matches = [
-        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents.slice() ),
-        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents.slice()),
-        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents.slice()),
-        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents.slice())
+        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents),
+        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
+        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents),
+        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents)
     ]
-
 
     if(!welcomed){
         instrction = talker.welcomeChallenge()
@@ -391,7 +341,10 @@ async function ask_to_do_game(){
 
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
-            win = await game.play(timeout);
+            device = await game.play(timeout);
+
+            win = is_device_sensitive ? device == game.correct_device : device !== wait;
+
             if(win){
                 positiveSound.play()
             }else{
@@ -594,7 +547,16 @@ async function reason_question(question){
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
 
             }else if(question.match(/difficulty|difficult|difficulter/i)){
-                if(question.match(/hard/i)){
+                if(question.match(/more/i)){
+                    if(question.match(/hard|difficult/i)){
+                        difficualty += 1
+                    }else if(question.match(/easy/i)){
+                        difficualty -= 1
+                        if(difficualty<1) difficualty = 1
+                    }else{
+                        return talker.unsure();
+                    }
+                }else if(question.match(/hard/i)){
                     difficualty = 3
                 }else if(question.match(/normal/i)){
                     difficualty = 2
@@ -602,6 +564,7 @@ async function reason_question(question){
                     difficualty = 1
                 }else if(question.match(/easier/i)){
                     difficualty -= 1
+                    if(difficualty<1) difficualty = 1
                 }else if(question.match(/harder|difficulter/i)){
                     difficualty += 1
                 }else{

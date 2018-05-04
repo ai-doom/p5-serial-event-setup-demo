@@ -101907,6 +101907,74 @@ class Light extends SimpleOutputDevice{
 
 /***/ }),
 
+/***/ "./src/Game.js":
+/*!*********************!*\
+  !*** ./src/Game.js ***!
+  \*********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Device_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Device.js */ "./src/Device.js");
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+
+
+/**
+ * 
+ * 
+ * @param {[InputDevice, string]} deviceEvent 
+ * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
+ * @param {number} timeout 
+ * @returns {boolean} if the correct device is activated
+ */
+const wait_until_some_device = async (deviceEvent, deviceEvents, timeout) => {
+    let [correct_device, _] = deviceEvent
+    let events_count = deviceEvents.length
+    let inDeviceEvents = deviceEvents.slice(0)
+    if(timeout){
+        inDeviceEvents.push([wait, timeout])
+    }
+    let [waited_device, waited_event] = await wait_race(inDeviceEvents)
+    return waited_device;
+}
+
+// var color_to_button = {
+//     'white': button3,
+//     'red': button2,
+//     'blue': button1,
+// }
+// var possible_buttons = ['white', 'red', 'blue']
+
+class GameMatch{
+    /**
+     * Creates an instance of GameMatch.
+     * @param {any} instrction 
+     * @param {[InputDevice, string]} deviceEvent 
+     * @param {[[InputDevice, string]]} [deviceEvents=[]] 
+     * @memberof GameMatch
+     */
+    constructor(instrction, deviceEvent, deviceEvents = []){
+        this.instrction = instrction
+        this.deviceEvent = deviceEvent
+        this.inDeviceEvents = deviceEvents.slice(0)
+        this.inDeviceEvents.push(deviceEvent)
+    }
+    async play(timeout){
+        let start = new Date()
+        await Object(_index_js__WEBPACK_IMPORTED_MODULE_1__["popup_and_play"])(this.instrction)
+        let end = new Date()
+        console.log('instruction elaspe', end - start)
+
+        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
+    }
+    get correct_device(){
+        return this.deviceEvent;
+    }
+}
+
+/***/ }),
+
 /***/ "./src/Keyboard.js":
 /*!*************************!*\
   !*** ./src/Keyboard.js ***!
@@ -102736,9 +102804,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var eventemitter2__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(eventemitter2__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var os__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! os */ "./node_modules/os-browserify/browser.js");
 /* harmony import */ var os__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(os__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _Game_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Game.js */ "./src/Game.js");
 
 
 // import Microm from 'microm'
+
 
 
 
@@ -103003,58 +103073,6 @@ const set_device_value = (device, factor) => {
     return device.threshold;
 }
 
-
-const deviceEvent = (device, event) => [device, event]
-
-
-/**
- * 
- * 
- * @param {[InputDevice, string]} deviceEvent 
- * @param {[[InputDevice, string] | [wait, number]]} inDeviceEvents 
- * @param {number} timeout 
- * @returns {boolean} if the correct device is activated
- */
-const wait_until_some_device = async (deviceEvent, inDeviceEvents, timeout) => {
-    let [correct_device, _] = deviceEvent
-    if(timeout){
-        inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"], timeout])
-    }
-    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_9__["wait_race"])(inDeviceEvents)
-    // console.log(waited_device)
-    if(inDeviceEvents.length <= 1){
-        return waited_device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"] || waited_device == correct_device
-    }else{
-        return waited_device == correct_device
-    }
-}
-
-// var color_to_button = {
-//     'white': button3,
-//     'red': button2,
-//     'blue': button1,
-// }
-// var possible_buttons = ['white', 'red', 'blue']
-
-class GameMatch{
-    constructor(instrction, deviceEvent, allDeviceEvents = []){
-        this.instrction = instrction
-        this.deviceEvent = deviceEvent
-        this.inDeviceEvents = allDeviceEvents
-        this.inDeviceEvents.push(deviceEvent)
-    }
-    async play(timeout){
-        pop_busy_dialog(this.instrction.text, false)
-
-        let start = new Date()
-        await this.instrction.play()
-        let end = new Date()
-        console.log('instruction elaspe', start - end)
-
-        return await wait_until_some_device(this.deviceEvent, this.inDeviceEvents, timeout)
-    }
-}
-
 let welcomed = false
 var difficualty = 1;
 function reset_states(){
@@ -103080,15 +103098,16 @@ async function ask_to_do_game(){
         [touch, 'press']
     ]
 
-    let inDeviceEvents = difficualty > 1 ? allInDeviceEvents : [];
+    let is_device_sensitive = difficualty > 1;
+
+    let inDeviceEvents = is_device_sensitive ? allInDeviceEvents : [];
 
     let possible_game_matches = [
-        new GameMatch(talker.liftMe(), [photo, 'press'], inDeviceEvents.slice() ),
-        new GameMatch(talker.squeezeMe(), [bend, 'press'], inDeviceEvents.slice()),
-        new GameMatch(talker.tapMe(), [touch, 'press'], inDeviceEvents.slice()),
-        new GameMatch(talker.pressMe(), [force, 'press'], inDeviceEvents.slice())
+        new _Game_js__WEBPACK_IMPORTED_MODULE_12__["GameMatch"](talker.liftMe(), [photo, 'press'], inDeviceEvents),
+        new _Game_js__WEBPACK_IMPORTED_MODULE_12__["GameMatch"](talker.squeezeMe(), [bend, 'press'], inDeviceEvents),
+        new _Game_js__WEBPACK_IMPORTED_MODULE_12__["GameMatch"](talker.tapMe(), [touch, 'press'], inDeviceEvents),
+        new _Game_js__WEBPACK_IMPORTED_MODULE_12__["GameMatch"](talker.pressMe(), [force, 'press'], inDeviceEvents)
     ]
-
 
     if(!welcomed){
         instrction = talker.welcomeChallenge()
@@ -103129,7 +103148,10 @@ async function ask_to_do_game(){
 
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
-            win = await game.play(timeout);
+            device = await game.play(timeout);
+
+            win = is_device_sensitive ? device == game.correct_device : device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"];
+
             if(win){
                 positiveSound.play()
             }else{
@@ -103332,7 +103354,16 @@ async function reason_question(question){
                 return talker.okey(`Language switched to ${new_langauge_literal}.`);
 
             }else if(question.match(/difficulty|difficult|difficulter/i)){
-                if(question.match(/hard/i)){
+                if(question.match(/more/i)){
+                    if(question.match(/hard|difficult/i)){
+                        difficualty += 1
+                    }else if(question.match(/easy/i)){
+                        difficualty -= 1
+                        if(difficualty<1) difficualty = 1
+                    }else{
+                        return talker.unsure();
+                    }
+                }else if(question.match(/hard/i)){
                     difficualty = 3
                 }else if(question.match(/normal/i)){
                     difficualty = 2
@@ -103340,6 +103371,7 @@ async function reason_question(question){
                     difficualty = 1
                 }else if(question.match(/easier/i)){
                     difficualty -= 1
+                    if(difficualty<1) difficualty = 1
                 }else if(question.match(/harder|difficulter/i)){
                     difficualty += 1
                 }else{
