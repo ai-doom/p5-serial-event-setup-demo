@@ -251,7 +251,7 @@ export default class SentenceLibrary {
     tiltMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`私を回転させて！`);
+                return this.sentence(`回転させて！`);
 
             case 'es-es':
                 return this.sentence(`girarme`);
@@ -259,7 +259,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Rotate Me` );
+                return this.sentence(`Rotate Me!` );
         }
     }
     tapMe() {

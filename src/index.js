@@ -15,7 +15,7 @@ import { release } from "os";
 import {GameMatch} from './Game.js'
 
 let force = new ThresholdedSensor(12);
-let bend  = new ThresholdedSensor(360);
+let bend  = new ThresholdedSensor(300);
 let photo = new ThresholdedSensor(0);
 let touch = new CapasitiveSensor(20000);
 
@@ -269,7 +269,8 @@ var difficualty = 1;
 function reset_states(){
     welcomed = false;
     difficualty = 1;
-    console.warn('Welcome Message Up, Difficualty to 1.')
+    name = ''
+    console.warn('Welcome Message Up, Difficualty to 1, name reset.')
 }
 window.no_welcome = function(){
     welcomed = true
@@ -277,6 +278,7 @@ window.no_welcome = function(){
 }
 window.reset = reset_states;
 
+var name = '';
 
 async function ask_to_do_game(){
     let talker = new Talker(language);
@@ -307,11 +309,12 @@ async function ask_to_do_game(){
         welcomed = true;
     }
 
-
-    let siri_question = talker.askForName();
-    await popup_and_play(siri_question)
-
-    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+    if(!name){
+        let siri_question = talker.askForName();
+        await popup_and_play(siri_question)
+    
+        name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+    }
 
     instrction = talker.okey_play(name);
     await popup_and_play(instrction)
@@ -365,15 +368,20 @@ async function ask_to_do_game(){
         level += 1
     }
 
-    console.log(`Fianl timeout: ${timeout}`)
+    console.log(`Final timeout: ${timeout}`)
+
+
+    instrction = talker.made_round(level - 1, difficualty)
+    await popup_and_play(instrction)
+
     if (level > 3){
         difficualty += 1
         instrction = talker.difficulty_upgraded()
         await popup_and_play(instrction)
-    } 
 
-    instrction = talker.made_round(level - 1, difficualty)
-    await popup_and_play(instrction)
+        bgMusic.stop();
+        await ask_to_do_game()
+    } 
 
     instrction = talker.successComply()
     await popup_and_play(instrction)

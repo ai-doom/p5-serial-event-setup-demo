@@ -102273,7 +102273,7 @@ class SentenceLibrary {
     tiltMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`私を回転させて！`);
+                return this.sentence(`回転させて！`);
 
             case 'es-es':
                 return this.sentence(`girarme`);
@@ -102281,7 +102281,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Rotate Me` );
+                return this.sentence(`Rotate Me!` );
         }
     }
     tapMe() {
@@ -102779,7 +102779,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let force = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](12);
-let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](360);
+let bend  = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](300);
 let photo = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["ThresholdedSensor"](0);
 let touch = new _Device_js__WEBPACK_IMPORTED_MODULE_4__["CapasitiveSensor"](20000);
 
@@ -103033,7 +103033,8 @@ var difficualty = 1;
 function reset_states(){
     welcomed = false;
     difficualty = 1;
-    console.warn('Welcome Message Up, Difficualty to 1.')
+    name = ''
+    console.warn('Welcome Message Up, Difficualty to 1, name reset.')
 }
 window.no_welcome = function(){
     welcomed = true
@@ -103041,6 +103042,7 @@ window.no_welcome = function(){
 }
 window.reset = reset_states;
 
+var name = '';
 
 async function ask_to_do_game(){
     let talker = new _Sentence_js__WEBPACK_IMPORTED_MODULE_8__["default"](language);
@@ -103071,11 +103073,12 @@ async function ask_to_do_game(){
         welcomed = true;
     }
 
-
-    let siri_question = talker.askForName();
-    await popup_and_play(siri_question)
-
-    let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+    if(!name){
+        let siri_question = talker.askForName();
+        await popup_and_play(siri_question)
+    
+        name = await ask_with_dialog_and_indicator_sound(siri_question.text)
+    }
 
     instrction = talker.okey_play(name);
     await popup_and_play(instrction)
@@ -103129,15 +103132,20 @@ async function ask_to_do_game(){
         level += 1
     }
 
-    console.log(`Fianl timeout: ${timeout}`)
+    console.log(`Final timeout: ${timeout}`)
+
+
+    instrction = talker.made_round(level - 1, difficualty)
+    await popup_and_play(instrction)
+
     if (level > 3){
         difficualty += 1
         instrction = talker.difficulty_upgraded()
         await popup_and_play(instrction)
-    } 
 
-    instrction = talker.made_round(level - 1, difficualty)
-    await popup_and_play(instrction)
+        bgMusic.stop();
+        await ask_to_do_game()
+    } 
 
     instrction = talker.successComply()
     await popup_and_play(instrction)
