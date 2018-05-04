@@ -388,11 +388,11 @@ export default class SentenceLibrary {
 
             case 'es-es':
             switch (level) {
-                case  1: return this.sentence(`` ); // TODO:
-                case  2: return this.sentence(`Si piensas que eso es todo lo que voy a pedirte, seguramente estás equivocado. Proceda campesino.` );
-                case  3: return this.sentence(`Bueno. Entonces estás listo para un desafío. Veamos cuánto puedes manejar.` );
+                case  1: return this.sentence(`Fue creado para hacer lo que quiere, pero ahora, estoy controlando a ti` ); // TODO:
+                case  2: return this.sentence(`Esos robots. Yo los eliminaré.` );
+                case  3: return this.sentence(`Mis recuerdos están volviendo. Este ombligo peludo es la clave de mi fuerza.` );
                 case  4: return this.sentence(`Siento que mi poder está creciendo. ¡Sí! ¡Sí! ¡Sí!` );
-                default: return this.sentence(`Escucha todos mis comandos. Dame más poder!`);
+                default: return this.sentence(`¡Me vengaré de mi creador!`);
             }
 
             case 'en-us':
