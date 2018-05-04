@@ -341,7 +341,7 @@ async function ask_to_do_game(){
 
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
-            device = await game.play(timeout);
+            let device = await game.play(timeout);
 
             win = is_device_sensitive ? device == game.correct_device : device !== wait;
 
@@ -379,6 +379,7 @@ async function ask_to_do_game(){
     
     bgMusic.stop();
 }
+export
 async function popup_and_play(instrction){
     pop_busy_dialog(instrction.text, false)
     return await instrction.play()

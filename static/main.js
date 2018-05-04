@@ -101919,6 +101919,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GameMatch", function() { return GameMatch; });
 /* harmony import */ var _Device_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Device.js */ "./src/Device.js");
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+
 
 
 /**
@@ -101934,9 +101936,9 @@ const wait_until_some_device = async (deviceEvent, deviceEvents, timeout) => {
     let events_count = deviceEvents.length
     let inDeviceEvents = deviceEvents.slice(0)
     if(timeout){
-        inDeviceEvents.push([wait, timeout])
+        inDeviceEvents.push([_utils_js__WEBPACK_IMPORTED_MODULE_2__["wait"], timeout])
     }
-    let [waited_device, waited_event] = await wait_race(inDeviceEvents)
+    let [waited_device, waited_event] = await Object(_utils_js__WEBPACK_IMPORTED_MODULE_2__["wait_race"])(inDeviceEvents)
     return waited_device;
 }
 
@@ -102783,11 +102785,12 @@ async function mic_stop(){
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/*! no exports provided */
+/*! exports provided: popup_and_play */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "popup_and_play", function() { return popup_and_play; });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var howler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! howler */ "./node_modules/howler/dist/howler.js");
@@ -103149,7 +103152,7 @@ async function ask_to_do_game(){
 
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
-            device = await game.play(timeout);
+            let device = await game.play(timeout);
 
             win = is_device_sensitive ? device == game.correct_device : device !== _utils_js__WEBPACK_IMPORTED_MODULE_9__["wait"];
 

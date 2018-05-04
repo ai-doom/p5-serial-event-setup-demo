@@ -1,5 +1,6 @@
 import {InputDevice} from './Device.js'
 import {popup_and_play} from './index.js'
+import {wait, wait_race} from './utils.js'
 /**
  * 
  * 
