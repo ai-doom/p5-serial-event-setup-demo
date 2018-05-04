@@ -484,10 +484,10 @@ export default class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
-    made_round(round, difficulty) {
+    made_round(level, difficulty) {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`難度 ${difficulty} に、 ${round} 回を達成しました〜`);
+                return this.sentence(`難度 ${difficulty} に、 ${level} 回を達成しました〜`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
@@ -495,7 +495,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have completed ${round} rounds on level ${difficulty}!`);
+                return this.sentence(`You have completed ${level} levels on difficulty ${difficulty}!`);
         }
     }
     successComply() {
@@ -512,11 +512,11 @@ export default class SentenceLibrary {
                 return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
-    have_seconds(milisencond, round){
+    have_seconds(milisencond, level){
         let seconds = Math.floor(milisencond/1000)
         switch (this.lang) {
             case 'ja-jp':
-            return this.sentence(`一回　${seconds} 秒よ〜`);
+            return this.sentence(`今回は、一回　${seconds} 秒。`);
 
             case 'es-es':
                 
@@ -524,7 +524,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
+                return this.sentence(`You have ${seconds} senconds, to complete level ${level}.`);
         }
     }
     difficulty_upgraded(){
@@ -537,8 +537,7 @@ export default class SentenceLibrary {
 
             case 'en-us':
             case 'en-gb':
-            default:
-                return this.sentence(`Difficulty upgraded!`);
+            default: return this.sentence(`Difficulty upgraded!`);
         }
     }
 }

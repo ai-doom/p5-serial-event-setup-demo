@@ -102435,10 +102435,10 @@ class SentenceLibrary {
                 return this.sentence(`Boo boo, you failed!`);
         }
     }
-    made_round(round, difficulty) {
+    made_round(level, difficulty) {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`難度 ${difficulty} に、 ${round} 回を達成しました〜`);
+                return this.sentence(`難度 ${difficulty} に、 ${level} 回を達成しました〜`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
@@ -102446,7 +102446,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have completed ${round} rounds on level ${difficulty}!`);
+                return this.sentence(`You have completed ${level} levels on difficulty ${difficulty}!`);
         }
     }
     successComply() {
@@ -102463,11 +102463,11 @@ class SentenceLibrary {
                 return this.sentence(`You have activated all of my strength. I will rule!`);
         }
     }
-    have_seconds(milisencond, round){
+    have_seconds(milisencond, level){
         let seconds = Math.floor(milisencond/1000)
         switch (this.lang) {
             case 'ja-jp':
-            return this.sentence(`一回　${seconds} 秒よ〜`);
+            return this.sentence(`今回は、一回　${seconds} 秒。`);
 
             case 'es-es':
                 
@@ -102475,7 +102475,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You have ${seconds} senconds, to complete round ${round}.`);
+                return this.sentence(`You have ${seconds} senconds, to complete level ${level}.`);
         }
     }
     difficulty_upgraded(){
@@ -102488,8 +102488,7 @@ class SentenceLibrary {
 
             case 'en-us':
             case 'en-gb':
-            default:
-                return this.sentence(`Difficulty upgraded!`);
+            default: return this.sentence(`Difficulty upgraded!`);
         }
     }
 }
@@ -103056,12 +103055,18 @@ class GameMatch{
     }
 }
 
-let welcomed = true
+let welcomed = false
 var difficualty = 1;
 function reset_states(){
     welcomed = false;
     difficualty = 1;
+    console.warn('Welcome Message Up, Difficualty to 1.')
 }
+window.no_welcome = function(){
+    welcomed = true
+    console.warn('`No Welcome Message` Set.')
+}
+window.reset = reset_states;
 
 
 async function ask_to_do_game(){
@@ -103094,38 +103099,33 @@ async function ask_to_do_game(){
 
 
     let siri_question = talker.askForName();
-    pop_busy_dialog(siri_question.text, false);
-    await siri_question.play();
+    await popup_and_play(siri_question)
 
     let name = await ask_with_dialog_and_indicator_sound(siri_question.text)
 
-    siri_question = talker.okey_play(name);
-    pop_busy_dialog(siri_question.text, false);
-    await siri_question.play();
+    instrction = talker.okey_play(name);
+    await popup_and_play(instrction)
     
     bgMusic.play();
 
     instrction = talker.beginChallenge()
-    pop_busy_dialog(instrction.text, false)
-    await instrction.play()
+    await popup_and_play(instrction)
     
     //  trail
-    let round = 1;
+    let level = 1;
     let timeout;
     let game ;
     let win ;
     let progress_speed = 0.5;
     let initialDuration = 8000;
-    if( difficualty > 2 ){
-        progress_speed = 1;
-    }
+
+    progress_speed *= difficualty;
 
     while (true) {
-        timeout = initialDuration/(progress_speed * round);
+        timeout = initialDuration/(progress_speed * level);
 
-        instrction = talker.have_seconds(timeout, round)
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
+        instrction = talker.have_seconds(timeout, level)
+        await popup_and_play(instrction)
 
         for (let index = 0; index < 6; index++) {
             game =  possible_game_matches.randomElement();
@@ -103144,28 +103144,29 @@ async function ask_to_do_game(){
             break
         }
 
-        bgMusic.rate(1 + (0.1 * round) )
+        bgMusic.rate(1 + (0.1 * level) )
 
-        round += 1
+        level += 1
     }
 
     console.log(`Fianl timeout: ${timeout}`)
-    if (round > 3){
+    if (level > 3){
         difficualty += 1
         instrction = talker.difficulty_upgraded()
-        pop_busy_dialog(instrction.text, false)
-        await instrction.play()
+        await popup_and_play(instrction)
     } 
 
-    instrction = talker.made_round(round - 1, difficualty)
-    pop_busy_dialog(instrction.text, false)
-    await instrction.play()
+    instrction = talker.made_round(level - 1, difficualty)
+    await popup_and_play(instrction)
 
     instrction = talker.successComply()
-    pop_busy_dialog(instrction.text, false)
-    await instrction.play()
+    await popup_and_play(instrction)
     
     bgMusic.stop();
+}
+async function popup_and_play(instrction){
+    pop_busy_dialog(instrction.text, false)
+    return await instrction.play()
 }
 
 async function pressAsk(autoStop = false){
