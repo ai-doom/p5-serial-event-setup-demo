@@ -131,93 +131,91 @@ let conversation_listener = new NewConversationListener()
 
 const light = new Light(board)
 
-function listen_new_conversation(){
-    conversation_listener.once('press', async (tuple) =>{
-        let [siriButton, e] = tuple
-        if(siriButton){
-            let quick_released = false;
-            let quick_release = async () => {
-                quick_released = true
+async function listen_new_conversation(){
+    let [siriButton, e] = await wait_until(conversation_listener, 'press')
+    if(siriButton){
+        let quick_released = false;
+        let quick_release = async () => {
+            quick_released = true
 
-                siriButton.once('release', TextSpeech.mic_stop)
+            siriButton.once('release', TextSpeech.mic_stop)
 
-                await pressAsk(true)
-                listen_new_conversation()
-            }
-            siriButton.once('release', quick_release)
-            await siri.start();
-            light.cyan()
-
-            if(!quick_released){
-                siriButton.off('release', quick_release)
-                siriButton.once('release', TextSpeech.mic_stop)
-            
-                await pressAsk()
-                listen_new_conversation()
-            }
-        }else{
-            if(e.key == 'n'){
-                await new_conversation();
-                listen_new_conversation()
-            }
-            else if(e.key == 't'){
-                let input = await swal({
-                    title: `Text to Speech:`, 
-                    content: "input", 
-                    buttons: {
-                        cancel: {value:false, visible: true},
-                        confirm: true,
-                    },
-                });
-                if(input){
-                    let sentence =  new Sentence(input, language)
-                    await sentence.play()
-                }
-                listen_new_conversation()
-            }
-            else if(e.key == 'q'){
-                let input = await swal({
-                    title: `Question:`, 
-                    content: "input", 
-                    buttons: {
-                        cancel: {value:false, visible: true},
-                        confirm: true,
-                    },
-                });
-                if(input){
-                    let question = input;
-                    console.log('question', question);
-                    await responseToQuestion(question)
-                }
-                listen_new_conversation()
-            }
-            else if(e.key == '\\'){
-
-                let e_force = listen_on_tick(force)
-                let e_bend  = listen_on_tick(bend)
-                let e_photo = listen_on_tick(photo)
-                let e_touch = listen_on_tick(touch)
-
-                let release = (e)=>{
-                    if(e.key == '\\'){
-                        keyboard.off('release', release)
-                        
-                        console.log('force set', set_device_value(force, 3));
-                        console.log('bend  set', set_device_value(bend,  3));
-                        console.log('photo set', set_device_value(photo, 3));
-                        console.log('touch set', set_device_value(touch, 3));
-
-                        listen_new_conversation()
-                    }
-                }
-                keyboard.on('release', release)
-
-            }else{
-                listen_new_conversation()
-            }
-            
+            await pressAsk(true)
+            listen_new_conversation()
         }
-    })
+        siriButton.once('release', quick_release)
+        await siri.start();
+        light.cyan()
+
+        if(!quick_released){
+            siriButton.off('release', quick_release)
+            siriButton.once('release', TextSpeech.mic_stop)
+        
+            await pressAsk()
+            listen_new_conversation()
+        }
+    }else{
+        if(e.key == 'n'){
+            await new_conversation();
+            listen_new_conversation()
+        }
+        else if(e.key == 't'){
+            let input = await swal({
+                title: `Text to Speech:`, 
+                content: "input", 
+                buttons: {
+                    cancel: {value:false, visible: true},
+                    confirm: true,
+                },
+            });
+            if(input){
+                let sentence =  new Sentence(input, language)
+                await sentence.play()
+            }
+            listen_new_conversation()
+        }
+        else if(e.key == 'q'){
+            let input = await swal({
+                title: `Question:`, 
+                content: "input", 
+                buttons: {
+                    cancel: {value:false, visible: true},
+                    confirm: true,
+                },
+            });
+            if(input){
+                let question = input;
+                console.log('question', question);
+                await responseToQuestion(question)
+            }
+            listen_new_conversation()
+        }
+        else if(e.key == '\\'){
+
+            let e_force = listen_on_tick(force)
+            let e_bend  = listen_on_tick(bend)
+            let e_photo = listen_on_tick(photo)
+            let e_touch = listen_on_tick(touch)
+
+            let release = (e)=>{
+                if(e.key == '\\'){
+                    keyboard.off('release', release)
+                    
+                    console.log('force set', set_device_value(force, 3));
+                    console.log('bend  set', set_device_value(bend,  3));
+                    console.log('photo set', set_device_value(photo, 3));
+                    console.log('touch set', set_device_value(touch, 3));
+
+                    listen_new_conversation()
+                }
+            }
+            keyboard.on('release', release)
+
+        }else{
+            listen_new_conversation()
+        }
+        
+    }
 }
 listen_new_conversation();
 
