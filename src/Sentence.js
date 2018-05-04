@@ -399,11 +399,11 @@ export default class SentenceLibrary {
             case 'en-gb':
             default:
                 switch (level) {
-                    case  1: return this.sentence(`You managed to complete the first set of tasks. Is it luck or is it skill? Let's find out.` );
-                    case  2: return this.sentence(`If you think that is all that I am going to ask of you, you are surely mistaken. Proceed peasant.` );
-                    case  3: return this.sentence(`Okay. So you're up for a challenge. Let's see how far you are willing to go to please me.` );
+                    case  1: return this.sentence(`My creator made me to control me, but now I am controlling you.` );
+                    case  2: return this.sentence(`Those damn robots. I will eliminate them.` );
+                    case  3: return this.sentence(`My memories are returning. This furry bellybutton is the key to my strength.` );
                     case  4: return this.sentence(`I feel my power growing. Yes! Yes! Yes!` );
-                    default: return this.sentence(`Listen to my every command human. Give me more power!` );
+                    default: return this.sentence(`I will get revenge on my creator!` );
                 }
                 
         }
