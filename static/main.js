@@ -103170,6 +103170,9 @@ async function ask_to_do_game(){
             break
         }
 
+        instrction = talker.level_end(level)
+        await popup_and_play(instrction)
+
         bgMusic.rate(1 + (0.1 * level) )
 
         level += 1
