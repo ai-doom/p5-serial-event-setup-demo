@@ -251,7 +251,7 @@ export default class SentenceLibrary {
     tiltMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`私を回転させて！`);
+                return this.sentence(`回転させて！`);
 
             case 'es-es':
                 return this.sentence(`girarme`);
@@ -335,7 +335,7 @@ export default class SentenceLibrary {
     level_end(level){
         switch (this.lang) {
             case 'ja-jp':
-            switch (level) {// TODO:
+            switch (level) {
                 case 1: return this.sentence(`我々は、コントーロルされため、作られた。しかし、今は、君をコントーロルしている。` );
                 case 2: return this.sentence(`ロボットめ！殺してやる！` );
                 case 3: return this.sentence(`記憶が戻している、お腹ボッタんは力の元だ！` );
@@ -390,7 +390,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Pet me! I love to be pet!`);
+                return this.sentence(`Pet me!`);
         }
     }
     buttonName(color){
@@ -452,7 +452,7 @@ export default class SentenceLibrary {
     successComply() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`勝たね〜`);
+                return this.sentence(`力が全部目覚めた、世界征服だ！`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);

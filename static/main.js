@@ -102262,7 +102262,7 @@ class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Apretarme`);
 
             case 'en-us':
             case 'en-gb':
@@ -102281,7 +102281,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Rotate Me!` );
+                return this.sentence(`Rotate Me` );
         }
     }
     tapMe() {
@@ -102290,7 +102290,7 @@ class SentenceLibrary {
                 return this.sentence(`ただて！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Tocame`);
 
             case 'en-us':
             case 'en-gb':
@@ -102304,7 +102304,7 @@ class SentenceLibrary {
                 return this.sentence(`つかって！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Levántame`);
 
             case 'en-us':
             case 'en-gb':
@@ -102357,7 +102357,7 @@ class SentenceLibrary {
     level_end(level){
         switch (this.lang) {
             case 'ja-jp':
-            switch (level) {// TODO:
+            switch (level) {
                 case 1: return this.sentence(`我々は、コントーロルされため、作られた。しかし、今は、君をコントーロルしている。` );
                 case 2: return this.sentence(`ロボットめ！殺してやる！` );
                 case 3: return this.sentence(`記憶が戻している、お腹ボッタんは力の元だ！` );
@@ -102407,12 +102407,12 @@ class SentenceLibrary {
                 return this.sentence(``);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`acariciarme.`);
 
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Pet me! I love to be pet!`);
+                return this.sentence(`Pet me!`);
         }
     }
     buttonName(color){
@@ -102474,7 +102474,7 @@ class SentenceLibrary {
     successComply() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`勝たね〜`);
+                return this.sentence(`力が全部目覚めた、世界征服だ！`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
