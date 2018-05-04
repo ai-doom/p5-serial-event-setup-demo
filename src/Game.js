@@ -26,6 +26,7 @@ const wait_until_some_device = async (deviceEvent, deviceEvents, timeout) => {
 // }
 // var possible_buttons = ['white', 'red', 'blue']
 
+export
 class GameMatch{
     /**
      * Creates an instance of GameMatch.

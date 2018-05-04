@@ -101911,11 +101911,12 @@ class Light extends SimpleOutputDevice{
 /*!*********************!*\
   !*** ./src/Game.js ***!
   \*********************/
-/*! no exports provided */
+/*! exports provided: GameMatch */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GameMatch", function() { return GameMatch; });
 /* harmony import */ var _Device_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Device.js */ "./src/Device.js");
 /* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.js */ "./src/index.js");
 
