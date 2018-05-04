@@ -102277,7 +102277,7 @@ class SentenceLibrary {
       tryAgain() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`もう一度やり直しましょう。今回は、コマンドごとに3秒`);
+                return this.sentence(`もう一度やり直しましょう`);
 
             case 'es-es':
                 return this.sentence(`Ahora intentaremos de nuevo.`);
@@ -102285,7 +102285,7 @@ class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Now we will go again. This time, you have three seconds per command`);
+                return this.sentence(`Now we will go again.`);
         }
     }
     timeChange() {
@@ -102302,7 +102302,70 @@ class SentenceLibrary {
                 return this.sentence(`This time, you have three seconds per command`);
         }
     }
-     cradleMe() {
+     timeChange2() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes dos segundos por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have two seconds per command`);
+        }
+    }
+     timeChange3() {
+        switch (this.lang) {
+            case 'ja-jp':
+                return this.sentence(``);
+
+            case 'es-es':
+                return this.sentence(`Esta vez, tienes un segundo por comando`);
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                return this.sentence(`This time, you have one second per command`);
+        }
+    }
+    level_end(level){
+        switch (this.lang) {
+            case 'ja-jp':
+            switch (level) {// TODO:
+                case 1: return this.sentence(`` );
+                case 2: return this.sentence(`` );
+                case 3: return this.sentence(`` );
+                case 4: return this.sentence(`` );
+            
+                default:
+                    break;
+            }
+
+            case 'es-es':
+            switch (level) {
+                case  1: return this.sentence(`` ); // TODO:
+                case  2: return this.sentence(`Si piensas que eso es todo lo que voy a pedirte, seguramente estás equivocado. Proceda campesino.` );
+                case  3: return this.sentence(`Bueno. Entonces estás listo para un desafío. Veamos cuánto puedes manejar.` );
+                case  4: return this.sentence(`Siento que mi poder está creciendo. ¡Sí! ¡Sí! ¡Sí!` );
+                default: return this.sentence(`Escucha todos mis comandos. Dame más poder!`);
+            }
+
+            case 'en-us':
+            case 'en-gb':
+            default:
+                switch (level) {
+                    case  1: return this.sentence(`You managed to complete the first set of tasks. Is it luck or is it skill? Let's find out.` );
+                    case  2: return this.sentence(`If you think that is all that I am going to ask of you, you are surely mistaken. Proceed peasant.` );
+                    case  3: return this.sentence(`Okay. So you're up for a challenge. Let's see how far you are willing to go to please me.` );
+                    case  4: return this.sentence(`I feel my power growing. Yes! Yes! Yes!` );
+                    default: return this.sentence(`Listen to my every command human. Give me more power!` );
+                }
+                
+        }
+    }
+    cradleMe() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`私は赤ちゃんです。クレードル私`);

@@ -379,78 +379,42 @@ export default class SentenceLibrary {
                 return this.sentence(`This time, you have one second per command`);
         }
     }
-    levelOne() {
+    level_end(level){
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`押して！`);
+            switch (level) {// TODO:
+                case 1: return this.sentence(`` );
+                case 2: return this.sentence(`` );
+                case 3: return this.sentence(`` );
+                case 4: return this.sentence(`` );
+            
+                default:
+                    break;
+            }
 
             case 'es-es':
-                return this.sentence(`Has completado el primer grupo de pruebas. ¿Es suerte o habilidad? Vamos a ver.`);
+            switch (level) {
+                case  1: return this.sentence(`` ); // TODO:
+                case  2: return this.sentence(`Si piensas que eso es todo lo que voy a pedirte, seguramente estás equivocado. Proceda campesino.` );
+                case  3: return this.sentence(`Bueno. Entonces estás listo para un desafío. Veamos cuánto puedes manejar.` );
+                case  4: return this.sentence(`Siento que mi poder está creciendo. ¡Sí! ¡Sí! ¡Sí!` );
+                default: return this.sentence(`Escucha todos mis comandos. Dame más poder!`);
+            }
 
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`You managed to complete the first set of tasks. Is it luck or is it skill? Let's find out.` );
+                switch (level) {
+                    case  1: return this.sentence(`You managed to complete the first set of tasks. Is it luck or is it skill? Let's find out.` );
+                    case  2: return this.sentence(`If you think that is all that I am going to ask of you, you are surely mistaken. Proceed peasant.` );
+                    case  3: return this.sentence(`Okay. So you're up for a challenge. Let's see how far you are willing to go to please me.` );
+                    case  4: return this.sentence(`I feel my power growing. Yes! Yes! Yes!` );
+                    default: return this.sentence(`Listen to my every command human. Give me more power!` );
+                }
+                
         }
     }
-    levelTwo() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`押して！`);
-
-            case 'es-es':
-                return this.sentence(`
-Si piensas que eso es todo lo que voy a pedirte, seguramente estás equivocado. Proceda campesino.`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`If you think that is all that I am going to ask of you, you are surely mistaken. Proceed peasant.` );
-        }
-    }
-     levelThree() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`押して！`);
-
-            case 'es-es':
-                return this.sentence(`Bueno. Entonces estás listo para un desafío. Veamos cuánto puedes manejar.`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`Okay. So you're up for a challenge. Let's see how far you are willing to go to please me.` );
-        }
-    }
-     levelFour() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`押して！`);
-
-            case 'es-es':
-                return this.sentence(`Siento que mi poder está creciendo. ¡Sí! ¡Sí! ¡Sí!`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`I feel my power growing. Yes! Yes! Yes!` );
-        }
-    }
-    levelFive() {
-        switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`押して！`);
-
-            case 'es-es':
-                return this.sentence(`Escucha todos mis comandos. Dame más poder!`);
-
-            case 'en-us':
-            case 'en-gb':
-            default:
-                return this.sentence(`Listen to my every command human. Give me more power!` );
-        }
-    }
-     cradleMe() {
+    cradleMe() {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`私は赤ちゃんです。クレードル私`);
