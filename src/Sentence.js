@@ -94,17 +94,11 @@ export default class SentenceLibrary {
     }
     okey_play(name){
         switch (this.lang) {
-            case 'ja-jp':
-                return this.sentence(`こんにちは、${name}さん、どうがしましたが？`);
-
-            case 'es-es':
-                return this.sentence(`Hola, ${name}, que tal?`);
-
-
+            case 'ja-jp':return this.sentence(`こんにちは、${name}さん、じゃあ、行きますか！`);
+            case 'es-es': return this.sentence(`Hola, ${name}, que tal?`);
             case 'en-us':
             case 'en-gb':
-            default:
-                return this.sentence(`OK, ${name}, Let's play`);
+            default: return this.sentence(`OK, ${name}, Let's play`);
         }
     }
     greetings() {
