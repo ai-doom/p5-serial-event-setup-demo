@@ -102088,7 +102088,7 @@ class SentenceLibrary {
     askForName() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`君のなは？`);
+                return this.sentence(`君の名前は？`);
 
             case 'es-es':
                 return this.sentence(`Cuál es tu nombre?`);
