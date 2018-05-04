@@ -102126,7 +102126,7 @@ class SentenceLibrary {
     greetings() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`こんにちは〜`);
+                return this.sentence(`こんにちは`);
 
             case 'es-es':
                 return this.sentence(`Hola!`);
@@ -102227,7 +102227,7 @@ class SentenceLibrary {
         switch (this.lang) {
             case 'ja-jp':
                 return this.sentence(`我れはAI、この世界を制服を望んして、命を欲しいならば、ルールに下がて！
-                                      我れに試さないてね〜`);
+                                      我れに試さないてね`);
 
             case 'es-es':
                 return this.sentence(``);
@@ -102445,7 +102445,7 @@ class SentenceLibrary {
     failComply() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`負けたよ〜`);
+                return this.sentence(`負けたよ`);
 
             case 'es-es':
                 return this.sentence(`Has fallado! Que triste!`);
@@ -102460,7 +102460,7 @@ class SentenceLibrary {
     made_round(level, difficulty) {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`難度 ${difficulty} に、 ${level} 回を達成しました〜`);
+                return this.sentence(`難度 ${difficulty} に、 ${level} 回を達成しました`);
 
             case 'es-es':
                 return this.sentence(`Me has activado! Que poder!`);
