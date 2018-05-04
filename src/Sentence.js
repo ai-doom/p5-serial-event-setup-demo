@@ -240,7 +240,7 @@ export default class SentenceLibrary {
                 return this.sentence(`押して！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Apretarme`);
 
             case 'en-us':
             case 'en-gb':
@@ -251,7 +251,7 @@ export default class SentenceLibrary {
     tiltMe() {
         switch (this.lang) {
             case 'ja-jp':
-                return this.sentence(`回転させて！`);
+                return this.sentence(`私を回転させて！`);
 
             case 'es-es':
                 return this.sentence(`girarme`);
@@ -259,7 +259,7 @@ export default class SentenceLibrary {
             case 'en-us':
             case 'en-gb':
             default:
-                return this.sentence(`Rotate Me!` );
+                return this.sentence(`Rotate Me` );
         }
     }
     tapMe() {
@@ -268,7 +268,7 @@ export default class SentenceLibrary {
                 return this.sentence(`ただて！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Tocame`);
 
             case 'en-us':
             case 'en-gb':
@@ -282,7 +282,7 @@ export default class SentenceLibrary {
                 return this.sentence(`つかって！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Levántame`);
 
             case 'en-us':
             case 'en-gb':
@@ -387,7 +387,7 @@ export default class SentenceLibrary {
                 return this.sentence(``);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`acariciarme.`);
 
             case 'en-us':
             case 'en-gb':
