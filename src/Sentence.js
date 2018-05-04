@@ -226,7 +226,7 @@ export default class SentenceLibrary {
                 return this.sentence(`ゲム、スタート！`);
 
             case 'es-es':
-                return this.sentence(``);
+                return this.sentence(`Empieza!`);
 
             case 'en-us':
             case 'en-gb':
