@@ -102359,12 +102359,10 @@ class SentenceLibrary {
             case 'ja-jp':
             switch (level) {// TODO:
                 case 1: return this.sentence(`我々は、コントーロルされため、作られた。しかし、今は、君をコントーロルしている。` );
-                case 2: return this.sentence(`` );
-                case 3: return this.sentence(`` );
-                case 4: return this.sentence(`` );
-            
-                default:
-                    break;
+                case 2: return this.sentence(`ロボットめ！殺してやる！` );
+                case 3: return this.sentence(`記憶が戻している、お腹ボッタんは力の元だ！` );
+                case 4: return this.sentence(`力が溢れている！` );
+                default:return this.sentence(`リベンジだ！リベンジだ！`);
             }
 
             case 'es-es':
