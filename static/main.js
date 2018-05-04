@@ -102944,7 +102944,7 @@ function listen_new_conversation(){
             let quick_release = async () => {
                 quick_released = true
 
-                // siriButton.once('release', TextSpeech.mic_stop)
+                siriButton.once('release', _TextSpeech_js__WEBPACK_IMPORTED_MODULE_6__["mic_stop"])
 
                 await pressAsk(true)
                 listen_new_conversation()
